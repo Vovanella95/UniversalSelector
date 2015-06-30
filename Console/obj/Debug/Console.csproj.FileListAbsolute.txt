@@ -1,0 +1,8 @@
+c:\users\uladzimir_paliukhovi\documents\visual studio 2013\Projects\UniversalParser\Console\bin\Debug\Console.exe.config
+c:\users\uladzimir_paliukhovi\documents\visual studio 2013\Projects\UniversalParser\Console\bin\Debug\Console.exe
+c:\users\uladzimir_paliukhovi\documents\visual studio 2013\Projects\UniversalParser\Console\bin\Debug\Console.pdb
+c:\users\uladzimir_paliukhovi\documents\visual studio 2013\Projects\UniversalParser\Console\bin\Debug\UniParser.dll
+c:\users\uladzimir_paliukhovi\documents\visual studio 2013\Projects\UniversalParser\Console\bin\Debug\UniParser.pdb
+c:\users\uladzimir_paliukhovi\documents\visual studio 2013\Projects\UniversalParser\Console\obj\Debug\Console.csprojResolveAssemblyReference.cache
+c:\users\uladzimir_paliukhovi\documents\visual studio 2013\Projects\UniversalParser\Console\obj\Debug\Console.exe
+c:\users\uladzimir_paliukhovi\documents\visual studio 2013\Projects\UniversalParser\Console\obj\Debug\Console.pdb
