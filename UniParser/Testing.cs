@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 namespace UniParser
 {
     public class Document : IDocument
+
     {
         public string Name { get; set; }
         public string Id { get; set; }

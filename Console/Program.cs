@@ -107,6 +107,19 @@ namespace ConsoleApp1
                 }
             };
             #endregion
+
+
+
+            Selector2 sel = new ChildSelector()
+            {
+                SelectorText = "House",
+                NextSelector = new AfterSelector()
+                {
+                    SelectorText = "Citchen"
+                }
+            };
+
+            var k = sel.QuerySelector(doc.Children).ToList();
             var selector = new Selector("*");
             var cells = ElementSelector.QuerySelectorAll(doc, selector);
             foreach (var item in cells)

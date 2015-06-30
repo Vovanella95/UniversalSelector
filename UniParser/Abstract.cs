@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace UniParser
 {
-    public interface IDocument
+    public interface IDocument : IElement
     {
-        IEnumerable<IElement> Children { get; set; }
+
     }
     public interface IElement
     {
