@@ -11,6 +11,8 @@ namespace ConsoleApp1
     {
         static void Main(string[] args)
         {
+
+            #region Document
             var doc = new Document()
             {
                 Children = new List<Element>()
@@ -105,7 +107,7 @@ namespace ConsoleApp1
                     }
                 }
             };
-
+            #endregion
 
             var selector = new Selector("House Bigroom [ScreenResolution=1920x1080]");
             var cells = ElementSelector.QuerySelectorAll(doc, selector);
@@ -113,6 +115,7 @@ namespace ConsoleApp1
             {
                 Console.WriteLine(item);
             }
+            Console.ReadKey();
         }
     }
 }

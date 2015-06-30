@@ -10,7 +10,6 @@ namespace UnitTestProject1
     [TestClass]
     public class UnitTest1
     {
-
         #region Document
         Document doc = new Document()
         {
@@ -130,7 +129,6 @@ namespace UnitTestProject1
         [TestMethod]
         public void QuerySelectorAllMustSelectChildElements()
         {
-            var getedTokens = ElementSelector.QuerySelectorAll(doc, new Selector("House *")).Select(w => w.ToString()).ToList();
             List<string> tokens = new List<string>()
             {
                 "Name = Koridor",
@@ -146,68 +144,69 @@ namespace UnitTestProject1
                 "Name = foof",
                 "Name = Citchen"
             };
-            Assert.IsTrue(tokens.All(w=>getedTokens.Contains(w)) && getedTokens.All(w=>tokens.Contains(w)));
+            Assert.IsTrue(Match("House *",tokens));
         }
 
         [TestMethod]
         public void QuerySelectorAllMustSelectDirectChildElements()
         {
-            var getedTokens = ElementSelector.QuerySelectorAll(doc, new Selector("House>*")).Select(w => w.ToString()).ToList();
             List<string> tokens = new List<string>()
             {
                 "Name = Koridor",
                 "Name = Citchen",
                 "Name = Bigroom",
             };
-            Assert.IsTrue(tokens.All(w => getedTokens.Contains(w)) && getedTokens.All(w => tokens.Contains(w)));
+            Assert.IsTrue(Match("House>*", tokens));
         }
 
         [TestMethod]
         public void QuerySelectorAllMustSelectAfterElements()
         {
-            var getedTokens = ElementSelector.QuerySelectorAll(doc, new Selector("Lol~*")).Select(w => w.ToString()).ToList();
             List<string> tokens = new List<string>()
             {
                 "Name = Lol",
                 "Name = foof",
                 "Name = Citchen"
             };
-            Assert.IsTrue(tokens.All(w => getedTokens.Contains(w)) && getedTokens.All(w => tokens.Contains(w)));
+            Assert.IsTrue(Match("Lol~*", tokens));
         }
 
         [TestMethod]
         public void QuerySelectorAllMustSelectImmediatlyAfterElements()
         {
-            var getedTokens = ElementSelector.QuerySelectorAll(doc, new Selector("Lol+*")).Select(w => w.ToString()).ToList();
             List<string> tokens = new List<string>()
             {
                 "Name = Lol",
                 "Name = foof"
             };
-            Assert.IsTrue(tokens.All(w => getedTokens.Contains(w)) && getedTokens.All(w => tokens.Contains(w)));
+            Assert.IsTrue(Match("Lol+*", tokens));
         }
 
         [TestMethod]
         public void QuerySelectorAllMustSelectCombinedElements()
         {
-            var getedTokens = ElementSelector.QuerySelectorAll(doc, new Selector("House>Citchen~*")).Select(w => w.ToString()).ToList();
             List<string> tokens = new List<string>()
             {
                 "Name = Bigroom",
             };
-            Assert.IsTrue(tokens.All(w => getedTokens.Contains(w)) && getedTokens.All(w => tokens.Contains(w)));
+            Assert.IsTrue(Match("House>Citchen~*", tokens));
         }
 
         [TestMethod]
         public void QuerySelectorAllMustSelectVeryCombinedWithAttribsElements()
         {
-            var getedTokens = ElementSelector.QuerySelectorAll(doc, new Selector("House .nice [ScreenResolution=1920x1080]")).Select(w => w.ToString()).ToList();
             List<string> tokens = new List<string>()
             {
                 "Name = TVSet",
             };
-            Assert.IsTrue(tokens.All(w => getedTokens.Contains(w)) && getedTokens.All(w => tokens.Contains(w)));
+            Assert.IsTrue(Match("House .nice [ScreenResolution=1920x1080]", tokens));
+        }
+
+        private bool Match(string selector, IEnumerable<string> tokens)
+        {
+            var getedTokens = ElementSelector.QuerySelectorAll(doc, new Selector(selector)).Select(w => w.ToString()).ToList();
+            return tokens.All(w => getedTokens.Contains(w)) && getedTokens.All(w => tokens.Contains(w));
         }
     }
-    }
+}
 

@@ -47,6 +47,7 @@ namespace UniParser
             return "Name = " + Name;
         }
     }
+
     public class Attribute : IAttribute
     {
         public string Name { get; set; }

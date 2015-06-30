@@ -9,27 +9,37 @@ namespace UniParser
 {
     public class ElementSelector
     {
+        public static IEnumerable<IElement> QuerySelectorAll(IDocument document, ISelector selector)
+        {
+            var temp = document.Children.ToList();
+            foreach (var selectorPart in selector.Parts)
+            {
+                if (selectorPart.Item1 != "*")
+                {
+                    temp = SelectPart(temp, selectorPart).ToList();
+                }
+            }
+            return temp;
+        }
+
+        #region Private methods
         public static bool IsMatch(string selectorPart, IElement element)   // "div#menu.btn[href=dfdf]"
         {
             Regex comparer = new Regex(@"(?'classes'[.])|(?'id'[#])|(?'attribs'\W\w+\W?\W\w+\W)|(?'tag'[.#=]*)");
             var selects = SplitProperties(selectorPart);
-
             var attributes = selects.Where(w => comparer.Match(w).Groups["attribs"].Success).Select(w => ParseAttributes(w));
             var classes = selects.Where(w => comparer.Match(w).Groups["classes"].Success).Select(w => w.Replace(".", ""));
             var id = selects.Where(w => comparer.Match(w).Groups["id"].Success).Count() != 0 ?
                             selects.First(w => comparer.Match(w).Groups["id"].Success).Replace("#", "") : null;
             var name = selects.Where(w => comparer.Match(w).Groups["tag"].Success).Count() != 0 ? selects.First(w => comparer.Match(w).Groups["tag"].Success) : null;
-
             if (!string.IsNullOrEmpty(id) && element.Id != id) // comparing by id
             {
                 return false;
             }
-
             if (!string.IsNullOrEmpty(name) && element.Name != name) // comparing by name
             {
                 return false;
             }
-
             if (classes != null && classes.Count() != 0)
             {
                 if (element.Classes == null)
@@ -41,7 +51,6 @@ namespace UniParser
                     return false;
                 }
             }
-
             if (attributes != null && attributes.Count() != 0)
             {
                 if (element.Attributes == null)
@@ -90,18 +99,6 @@ namespace UniParser
                 Value = val2
             };
         }
-        public static IEnumerable<IElement> QuerySelectorAll(IDocument document, ISelector selector)
-        {
-            var temp = document.Children.ToList();
-            foreach (var selectorPart in selector.Parts)
-            {
-                if (selectorPart.Item1 != "*")
-                {
-                    temp = SelectPart(temp, selectorPart).ToList();
-                }
-            }
-            return temp;
-        }
         static IEnumerable<IElement> SelectDirectChildren(IEnumerable<IElement> elements, Tuple<string,ConnectionType> selectorPart)
         {
             List<IElement> Children = new List<IElement>();
@@ -135,7 +132,6 @@ namespace UniParser
         {
             List<IElement> Children = new List<IElement>();
             List<IElement> Elements = new List<IElement>(elements);
-
             while (Elements.Count() != 0)
             {
                 foreach (var item in Elements)
@@ -273,7 +269,7 @@ namespace UniParser
                 Children.Clear();
             }
         }
-        private static IEnumerable<IElement> SelectPart(IEnumerable<IElement> elements, Tuple<string, ConnectionType> selectorPart)
+        static IEnumerable<IElement> SelectPart(IEnumerable<IElement> elements, Tuple<string, ConnectionType> selectorPart)
         {
             if (selectorPart.Item2 == ConnectionType.DirectChildren)
             {
@@ -297,5 +293,6 @@ namespace UniParser
             }
             throw new ArgumentException("Invalid selectorPart");
         }
+        #endregion
     }
 }
