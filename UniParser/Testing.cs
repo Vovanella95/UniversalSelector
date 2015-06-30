@@ -9,6 +9,10 @@ namespace UniParser
 {
     public class Document : IDocument
     {
+        public string Name { get; set; }
+        public string Id { get; set; }
+        public IEnumerable<IAttribute> Attributes { get; set; }
+        public IEnumerable<string> Classes { get; set; }
         public IEnumerable<IElement> Children { get; set; }
     }
 
@@ -17,7 +21,17 @@ namespace UniParser
         public IEnumerable<Tuple<string, ConnectionType>> Parts { get; set; }
         public Selector(string selector)
         {
-            Parts = GetParts(selector);
+            if (selector == "*")
+            {
+                Parts = new List<Tuple<string, ConnectionType>>()
+                {
+                    new Tuple<string,ConnectionType>("*",ConnectionType.None)
+                };
+            }
+            else
+            {
+                Parts = GetParts(selector);
+            }
         }
         public static IEnumerable<Tuple<string, ConnectionType>> GetParts(string selector)
         {
@@ -58,4 +72,3 @@ namespace UniParser
         }
     }
 }
-

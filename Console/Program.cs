@@ -11,7 +11,6 @@ namespace ConsoleApp1
     {
         static void Main(string[] args)
         {
-
             #region Document
             var doc = new Document()
             {
@@ -108,10 +107,8 @@ namespace ConsoleApp1
                 }
             };
             #endregion
-
-
-            var selector = new Selector("House Bigroom *");
-            var cells = ElementSelector.QuerySelectorAll(doc, selector,"ScreenResolution");
+            var selector = new Selector("*");
+            var cells = ElementSelector.QuerySelectorAll(doc, selector);
             foreach (var item in cells)
             {
                 Console.WriteLine(item);

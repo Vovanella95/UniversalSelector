@@ -129,7 +129,7 @@ namespace UnitTestProject1
         [TestMethod]
         public void QuerySelectorAllMustSelectChildElements()
         {
-            Match("House *",new List<string>()
+            Match("House *", new List<string>()
             {
                 "Name = Koridor",
                 "Name = Citchen",
@@ -196,10 +196,41 @@ namespace UnitTestProject1
             });
         }
 
+        [TestMethod]
+        public void QuerySelectorAllWithParameterShouldReturnRightResult()
+        {
+            var getedTokens = ElementSelector.QuerySelectorAll(doc, new Selector("House Bigroom *"), "ScreenResolution");
+            var tokens = new List<string>
+            {
+                "1920x1080"
+            };
+            Assert.IsTrue(tokens.All(w => getedTokens.Contains(w)) && getedTokens.All(w => tokens.Contains(w)));
+        }
+
+        [TestMethod]
+        public void QuerySelectorMustResutnAllElementsIsSelectorIsStar()
+        {
+            Match("*", new List<string>()
+                {
+                    "Name = House",
+                    "Name = Koridor",
+                    "Name = Citchen",
+                    "Name = Bigroom",
+                    "Name = Table",
+                    "Name = Chear",
+                    "Name = Gas",
+                    "Name = Citchen",
+                    "Name = TVSet",
+                    "Name = Lol",
+                    "Name = Lol",
+                    "Name = foof",
+                    "Name = Citchen"
+                });
+        }
+
         private void Match(string selector, IEnumerable<string> tokens)
         {
-            
-            var getedTokens = ElementSelector.QuerySelectorAll(doc, new Selector(selector)).Select(w => w.ToString()).ToList();
+            var getedTokens = ElementSelector.QuerySelectorAll(doc, new Selector(selector)).Select(w => w.ToString());
             Assert.IsTrue(tokens.All(w => getedTokens.Contains(w)) && getedTokens.All(w => tokens.Contains(w)));
         }
     }

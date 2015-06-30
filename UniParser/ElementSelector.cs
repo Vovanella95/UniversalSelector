@@ -11,12 +11,16 @@ namespace UniParser
     {
         public static IEnumerable<IElement> QuerySelectorAll(IDocument document, ISelector selector)
         {
-            var temp = document.Children.ToList();
+            var temp = document.Children;
+            if(selector.Parts.Count()==1 && selector.Parts.First().Item1=="*")
+            {
+                return SelectChildren(new List<IElement>(){new Element() { Children = document.Children }}, new Tuple<string, ConnectionType>("", ConnectionType.Children));
+            }
             foreach (var selectorPart in selector.Parts)
             {
                 if (selectorPart.Item1 != "*")
                 {
-                    temp = SelectPart(temp, selectorPart).ToList();
+                    temp = SelectPart(temp, selectorPart);
                 }
             }
             return temp;
@@ -30,12 +34,12 @@ namespace UniParser
                     yield return item.Attributes.First(w => w.Name == property).Value;
                 }
             }
-            throw new NotImplementedException();
         }
 
         #region Private methods
-        public static bool IsMatch(string selectorPart, IElement element)   // "div#menu.btn[href=dfdf]"
+        public static bool IsMatch(string selectorPart, IElement element)
         {
+            if (selectorPart == "$") return true;
             Regex comparer = new Regex(@"(?'classes'[.])|(?'id'[#])|(?'attribs'\W\w+\W?\W\w+\W)|(?'tag'[.#=]*)");
             var selects = SplitProperties(selectorPart);
             var attributes = selects.Where(w => comparer.Match(w).Groups["attribs"].Success).Select(w => ParseAttributes(w));
@@ -43,45 +47,24 @@ namespace UniParser
             var id = selects.Where(w => comparer.Match(w).Groups["id"].Success).Count() != 0 ?
                             selects.First(w => comparer.Match(w).Groups["id"].Success).Replace("#", "") : null;
             var name = selects.Where(w => comparer.Match(w).Groups["tag"].Success).Count() != 0 ? selects.First(w => comparer.Match(w).Groups["tag"].Success) : null;
-            if (!string.IsNullOrEmpty(id) && element.Id != id) // comparing by id
-            {
-                return false;
-            }
-            if (!string.IsNullOrEmpty(name) && element.Name != name) // comparing by name
-            {
-                return false;
-            }
+            if (!string.IsNullOrEmpty(id) && element.Id != id) return false;
+            if (!string.IsNullOrEmpty(name) && element.Name != name) return false;
             if (classes != null && classes.Count() != 0)
             {
-                if (element.Classes == null)
-                {
-                    return false;
-                }
-                if (classes.Any(w => !element.Classes.Contains(w)))
-                {
-                    return false;
-                }
+                if (element.Classes == null) return false;
+                if (classes.Any(w => !element.Classes.Contains(w))) return false;
             }
             if (attributes != null && attributes.Count() != 0)
             {
-                if (element.Attributes == null)
-                {
-                    return false;
-                }
+                if (element.Attributes == null) return false;
                 foreach (var attr in attributes)
                 {
                     bool k = false;
                     foreach (var item in element.Attributes)
                     {
-                        if (attr.CompareTo(item))
-                        {
-                            k = true;
-                        }
+                        if (attr.CompareTo(item)) k = true;
                     }
-                    if (k == false)
-                    {
-                        return false;
-                    }
+                    if (k == false) return false;
                 }
             }
             return true;
@@ -114,7 +97,6 @@ namespace UniParser
         {
             List<IElement> Children = new List<IElement>();
             List<IElement> Elements = new List<IElement>(elements);
-
             while (Elements.Count() != 0)
             {
                 foreach (var item in Elements)
@@ -188,7 +170,6 @@ namespace UniParser
         {
             List<IElement> Children = new List<IElement>();
             List<IElement> Elements = new List<IElement>(elements);
-
             while (Elements.Count() != 0)
             {
                 bool IsTrue = false;
@@ -223,7 +204,6 @@ namespace UniParser
         {
             List<IElement> Children = new List<IElement>();
             List<IElement> Elements = new List<IElement>(elements);
-
             while (Elements.Count() != 0)
             {
                 bool IsTrue = false;
