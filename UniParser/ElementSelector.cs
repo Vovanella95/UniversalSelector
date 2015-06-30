@@ -7,18 +7,8 @@ using System.Text.RegularExpressions;
 
 namespace UniParser
 {
-    public enum ConnectionType
-    {
-        None = 0,
-        Children = 32,
-        DirectChildren = 62,
-        After = 126,
-        ImmideatlyAfter = 43
-    }
-
     public class ElementSelector
     {
-
         public static bool IsMatch(string selectorPart, IElement element)   // "div#menu.btn[href=dfdf]"
         {
             Regex comparer = new Regex(@"(?'classes'[.])|(?'id'[#])|(?'attribs'\W\w+\W?\W\w+\W)|(?'tag'[.#=]*)");
@@ -112,8 +102,6 @@ namespace UniParser
             }
             return temp;
         }
-
-
         static IEnumerable<IElement> SelectDirectChildren(IEnumerable<IElement> elements, Tuple<string,ConnectionType> selectorPart)
         {
             List<IElement> Children = new List<IElement>();
@@ -285,7 +273,6 @@ namespace UniParser
                 Children.Clear();
             }
         }
-
         private static IEnumerable<IElement> SelectPart(IEnumerable<IElement> elements, Tuple<string, ConnectionType> selectorPart)
         {
             if (selectorPart.Item2 == ConnectionType.DirectChildren)
@@ -310,27 +297,5 @@ namespace UniParser
             }
             throw new ArgumentException("Invalid selectorPart");
         }
-    }
-
-    public interface IDocument
-    {
-        IEnumerable<IElement> Children { get; set; }
-    }
-    public interface IElement
-    {
-        string Name { get; set; }
-        string Id { get; set; }
-        IEnumerable<string> Classes { get; set; }
-        IEnumerable<IAttribute> Attributes { get; set; }
-        IEnumerable<IElement> Children { get; set; }
-    }
-    public interface IAttribute
-    {
-        string Name { get; set; }
-        string Value { get; set; }
-    }
-    public interface ISelector
-    {
-        IEnumerable<Tuple<string, ConnectionType>> Parts { get; set; }
     }
 }
