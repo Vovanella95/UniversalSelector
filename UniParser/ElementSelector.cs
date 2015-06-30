@@ -21,6 +21,17 @@ namespace UniParser
             }
             return temp;
         }
+        public static IEnumerable<string> QuerySelectorAll(IDocument document, ISelector selector, string property)
+        {
+            foreach (var item in QuerySelectorAll(document,selector))
+            {
+                if(item.Attributes.Any(w=>w.Name==property))
+                {
+                    yield return item.Attributes.First(w => w.Name == property).Value;
+                }
+            }
+            throw new NotImplementedException();
+        }
 
         #region Private methods
         public static bool IsMatch(string selectorPart, IElement element)   // "div#menu.btn[href=dfdf]"

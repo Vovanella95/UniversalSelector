@@ -109,8 +109,9 @@ namespace ConsoleApp1
             };
             #endregion
 
-            var selector = new Selector("House Bigroom [ScreenResolution=1920x1080]");
-            var cells = ElementSelector.QuerySelectorAll(doc, selector);
+
+            var selector = new Selector("House Bigroom *");
+            var cells = ElementSelector.QuerySelectorAll(doc, selector,"ScreenResolution");
             foreach (var item in cells)
             {
                 Console.WriteLine(item);

@@ -129,7 +129,7 @@ namespace UnitTestProject1
         [TestMethod]
         public void QuerySelectorAllMustSelectChildElements()
         {
-            List<string> tokens = new List<string>()
+            Match("House *",new List<string>()
             {
                 "Name = Koridor",
                 "Name = Citchen",
@@ -143,69 +143,64 @@ namespace UnitTestProject1
                 "Name = Lol",
                 "Name = foof",
                 "Name = Citchen"
-            };
-            Assert.IsTrue(Match("House *",tokens));
+            });
         }
 
         [TestMethod]
         public void QuerySelectorAllMustSelectDirectChildElements()
         {
-            List<string> tokens = new List<string>()
+            Match("House>*", new List<string>()
             {
                 "Name = Koridor",
                 "Name = Citchen",
                 "Name = Bigroom",
-            };
-            Assert.IsTrue(Match("House>*", tokens));
+            });
         }
 
         [TestMethod]
         public void QuerySelectorAllMustSelectAfterElements()
         {
-            List<string> tokens = new List<string>()
+            Match("Lol~*", new List<string>()
             {
                 "Name = Lol",
                 "Name = foof",
                 "Name = Citchen"
-            };
-            Assert.IsTrue(Match("Lol~*", tokens));
+            });
         }
 
         [TestMethod]
         public void QuerySelectorAllMustSelectImmediatlyAfterElements()
         {
-            List<string> tokens = new List<string>()
+            Match("Lol+*", new List<string>()
             {
                 "Name = Lol",
                 "Name = foof"
-            };
-            Assert.IsTrue(Match("Lol+*", tokens));
+            });
         }
 
         [TestMethod]
         public void QuerySelectorAllMustSelectCombinedElements()
         {
-            List<string> tokens = new List<string>()
+            Match("House>Citchen~*", new List<string>()
             {
                 "Name = Bigroom",
-            };
-            Assert.IsTrue(Match("House>Citchen~*", tokens));
+            });
         }
 
         [TestMethod]
         public void QuerySelectorAllMustSelectVeryCombinedWithAttribsElements()
         {
-            List<string> tokens = new List<string>()
+            Match("House .nice [ScreenResolution=1920x1080]", new List<string>()
             {
                 "Name = TVSet",
-            };
-            Assert.IsTrue(Match("House .nice [ScreenResolution=1920x1080]", tokens));
+            });
         }
 
-        private bool Match(string selector, IEnumerable<string> tokens)
+        private void Match(string selector, IEnumerable<string> tokens)
         {
+            
             var getedTokens = ElementSelector.QuerySelectorAll(doc, new Selector(selector)).Select(w => w.ToString()).ToList();
-            return tokens.All(w => getedTokens.Contains(w)) && getedTokens.All(w => tokens.Contains(w));
+            Assert.IsTrue(tokens.All(w => getedTokens.Contains(w)) && getedTokens.All(w => tokens.Contains(w)));
         }
     }
 }
