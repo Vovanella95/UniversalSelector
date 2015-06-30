@@ -3,3 +3,8 @@ c:\users\uladzimir_paliukhovi\documents\visual studio 2013\Projects\UniversalPar
 c:\users\uladzimir_paliukhovi\documents\visual studio 2013\Projects\UniversalParser\UniParser\obj\Debug\UniParser.dll
 c:\users\uladzimir_paliukhovi\documents\visual studio 2013\Projects\UniversalParser\UniParser\obj\Debug\UniParser.pdb
 c:\users\uladzimir_paliukhovi\documents\visual studio 2013\Projects\UniversalParser\UniParser\obj\Debug\UniParser.csprojResolveAssemblyReference.cache
+C:\Users\Uladzimir_Paliukhovi\Documents\UniversalSelector\UniParser\bin\Debug\UniParser.dll
+C:\Users\Uladzimir_Paliukhovi\Documents\UniversalSelector\UniParser\bin\Debug\UniParser.pdb
+C:\Users\Uladzimir_Paliukhovi\Documents\UniversalSelector\UniParser\obj\Debug\UniParser.csprojResolveAssemblyReference.cache
+C:\Users\Uladzimir_Paliukhovi\Documents\UniversalSelector\UniParser\obj\Debug\UniParser.dll
+C:\Users\Uladzimir_Paliukhovi\Documents\UniversalSelector\UniParser\obj\Debug\UniParser.pdb

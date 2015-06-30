@@ -72,14 +72,42 @@ namespace ConsoleApp1
                             },
                             new Element()
                             {
-                                Name = "Bigroom"
+                                Name = "Bigroom",
+                                Classes = new List<string> {"big","nice"},
+                                Children = new List<Element>()
+                                {
+                                    new Element()
+                                    {
+                                        Name = "TVSet",
+                                        Attributes = new List<UniParser.Attribute>()
+                                        {
+                                            new UniParser.Attribute()
+                                            {
+                                                Name = "ChannelCount",
+                                                Value = "12"
+                                            },
+                                            new UniParser.Attribute()
+                                            {
+                                                Name = "ScreenResolution",
+                                                Value = "1920x1080"
+                                            },
+                                            new UniParser.Attribute()
+                                            {
+                                                Name = "Size",
+                                                Value = "180x100"
+                                            }
+                                        }
+                                    }
+                                }
+                                
                             }
                         }
                     }
                 }
             };
 
-            var selector = new Selector("House>*");
+
+            var selector = new Selector("House Bigroom [ScreenResolution=1920x1080]");
             var cells = ElementSelector.QuerySelectorAll(doc, selector);
             foreach (var item in cells)
             {

@@ -6,3 +6,11 @@ c:\users\uladzimir_paliukhovi\documents\visual studio 2013\Projects\UniversalPar
 c:\users\uladzimir_paliukhovi\documents\visual studio 2013\Projects\UniversalParser\Console\obj\Debug\ConsoleApp1.csprojResolveAssemblyReference.cache
 c:\users\uladzimir_paliukhovi\documents\visual studio 2013\Projects\UniversalParser\Console\obj\Debug\Console.exe
 c:\users\uladzimir_paliukhovi\documents\visual studio 2013\Projects\UniversalParser\Console\obj\Debug\Console.pdb
+C:\Users\Uladzimir_Paliukhovi\Documents\UniversalSelector\Console\bin\Debug\Console.exe.config
+C:\Users\Uladzimir_Paliukhovi\Documents\UniversalSelector\Console\obj\Debug\Console.exe
+C:\Users\Uladzimir_Paliukhovi\Documents\UniversalSelector\Console\obj\Debug\Console.pdb
+C:\Users\Uladzimir_Paliukhovi\Documents\UniversalSelector\Console\bin\Debug\Console.exe
+C:\Users\Uladzimir_Paliukhovi\Documents\UniversalSelector\Console\bin\Debug\Console.pdb
+C:\Users\Uladzimir_Paliukhovi\Documents\UniversalSelector\Console\bin\Debug\UniParser.dll
+C:\Users\Uladzimir_Paliukhovi\Documents\UniversalSelector\Console\bin\Debug\UniParser.pdb
+C:\Users\Uladzimir_Paliukhovi\Documents\UniversalSelector\Console\obj\Debug\ConsoleApp1.csprojResolveAssemblyReference.cache

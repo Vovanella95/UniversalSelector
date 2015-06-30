@@ -19,7 +19,7 @@ namespace UniParser
     public class ElementSelector
     {
 
-        static bool IsMatch(string selectorPart, IElement element)   // "div#menu.btn[href=dfdf]"
+        public static bool IsMatch(string selectorPart, IElement element)   // "div#menu.btn[href=dfdf]"
         {
             Regex comparer = new Regex(@"(?'classes'[.])|(?'id'[#])|(?'attribs'\W\w+\W?\W\w+\W)|(?'tag'[.#=]*)");
             var selects = SplitProperties(selectorPart);
@@ -102,222 +102,213 @@ namespace UniParser
         }
         public static IEnumerable<IElement> QuerySelectorAll(IDocument document, ISelector selector)
         {
-            var temp = document.Children;
+            var temp = document.Children.ToList();
             foreach (var selectorPart in selector.Parts)
             {
-                temp = SelectPart(temp, selectorPart);
+                if (selectorPart.Item1 != "*")
+                {
+                    temp = SelectPart(temp, selectorPart).ToList();
+                }
             }
             return temp;
         }
-        private static IEnumerable<IElement> SelectPart(IEnumerable<IElement> elements, Tuple<string, ConnectionType> selectorPart)
+
+
+        static IEnumerable<IElement> SelectDirectChildren(IEnumerable<IElement> elements, Tuple<string,ConnectionType> selectorPart)
         {
-            #region Selector '>'
-            if (selectorPart.Item2 == ConnectionType.DirectChildren)
-            {
-                List<IElement> Children = new List<IElement>();
-                List<IElement> Elements = new List<IElement>(elements);
+            List<IElement> Children = new List<IElement>();
+            List<IElement> Elements = new List<IElement>(elements);
 
-                while (Elements.Count() != 0)
+            while (Elements.Count() != 0)
+            {
+                foreach (var item in Elements)
                 {
-                    foreach (var item in Elements)
+                    if (item.Children != null)
+                    {
+                        Children.AddRange(item.Children);
+                    }
+                    if (IsMatch(selectorPart.Item1, item))
                     {
                         if (item.Children != null)
                         {
-                            Children.AddRange(item.Children);
-                        }
-                        if (IsMatch(selectorPart.Item1, item))
-                        {
-                            if (item.Children != null)
+                            foreach (var element in item.Children)
                             {
-                                foreach (var element in item.Children)
+                                yield return element;
+                            }
+                        }
+                    }
+                }
+                Elements.Clear();
+                Elements.AddRange(Children);
+                Children.Clear();
+            }
+        }
+        static IEnumerable<IElement> SelectChildren(IEnumerable<IElement> elements, Tuple<string,ConnectionType> selectorPart)
+        {
+            List<IElement> Children = new List<IElement>();
+            List<IElement> Elements = new List<IElement>(elements);
+
+            while (Elements.Count() != 0)
+            {
+                foreach (var item in Elements)
+                {
+                    if (item.Children != null)
+                    {
+                        Children.AddRange(item.Children);
+                    }
+                    if (IsMatch(selectorPart.Item1, item))
+                    {
+                        List<IElement> parrent;
+                        if (item.Children != null)
+                        {
+                            parrent = new List<IElement>(item.Children);
+                        }
+                        else
+                        {
+                            parrent = new List<IElement>();
+                        }
+                        var children = new List<IElement>();
+                        while (parrent.Count() != 0)
+                        {
+                            foreach (var element in parrent)
+                            {
+                                if (element.Children != null && !IsMatch(selectorPart.Item1, element))
                                 {
-                                    yield return element;
+                                    children.AddRange(element.Children);
                                 }
+                                yield return element;
                             }
+                            parrent.Clear();
+                            parrent.AddRange(children);
+                            children.Clear();
                         }
                     }
-                    Elements.Clear();
-                    Elements.AddRange(Children);
-                    Children.Clear();
                 }
+                Elements.Clear();
+                Elements.AddRange(Children);
+                Children.Clear();
             }
-            #endregion
+        }
+        static IEnumerable<IElement> SelectAfter(IEnumerable<IElement> elements, Tuple<string, ConnectionType> selectorPart)
+        {
+            List<IElement> Children = new List<IElement>();
+            List<IElement> Elements = new List<IElement>(elements);
 
-            #region Selector ' '
-            if (selectorPart.Item2 == ConnectionType.Children)
+            while (Elements.Count() != 0)
             {
-                List<IElement> Children = new List<IElement>();
-                List<IElement> Elements = new List<IElement>(elements);
-
-                while (Elements.Count() != 0)
+                bool IsTrue = false;
+                foreach (var item in Elements)
                 {
-                    foreach (var item in Elements)
+                    if (item != null && IsTrue)
                     {
-                        if (item.Children != null)
-                        {
-                            Children.AddRange(item.Children);
-                        }
-                        if (IsMatch(selectorPart.Item1, item))
-                        {
-                            List<IElement> parrent;
-                            if (item.Children != null)
-                            {
-                                parrent = new List<IElement>(item.Children);
-                            }
-                            else
-                            {
-                                parrent = new List<IElement>();
-                            }
-                            var children = new List<IElement>();
-                            while (parrent.Count() != 0)
-                            {
-                                foreach (var element in parrent)
-                                {
-                                    if (element.Children != null && !IsMatch(selectorPart.Item1, item))
-                                    {
-                                        children.AddRange(element.Children);
-                                    }
-                                    yield return element;
-                                }
-                                parrent.Clear();
-                                parrent.AddRange(children);
-                                children.Clear();
-                            }
-                        }
-                    }
-                    Elements.Clear();
-                    Elements.AddRange(Children);
-                    Children.Clear();
-                }
-            }
-            #endregion
-
-            #region Selector '~'
-            if (selectorPart.Item2 == ConnectionType.After)
-            {
-                List<IElement> Children = new List<IElement>();
-                List<IElement> Elements = new List<IElement>(elements);
-
-                while (Elements.Count() != 0)
-                {
-                    bool IsTrue = false;
-                    foreach (var item in Elements)
-                    {
-                        if (item != null && IsTrue)
-                        {
-                            yield return item;
-                        }
-                        if (item == null)
-                        {
-                            IsTrue = false;
-                            continue;
-                        }
-                        if (item.Children != null)
-                        {
-                            Children.AddRange(item.Children);
-                            Children.Add(null);
-                        }
-                        if (IsMatch(selectorPart.Item1, item))
-                        {
-                            IsTrue = true;
-                            continue;
-                        }
-                    }
-                    Elements.Clear();
-                    Elements.AddRange(Children);
-                    Children.Clear();
-                }
-            }
-            #endregion
-
-            #region Selector '+'
-            if (selectorPart.Item2 == ConnectionType.ImmideatlyAfter)
-            {
-                List<IElement> Children = new List<IElement>();
-                List<IElement> Elements = new List<IElement>(elements);
-
-                while (Elements.Count() != 0)
-                {
-                    bool IsTrue = false;
-                    foreach (var item in Elements)
-                    {
-                        if (item != null && IsTrue)
-                        {
-                            yield return item;
-                            if (!IsMatch(selectorPart.Item1, item))
-                            {
-                                IsTrue = false;
-                            }
-                        }
-                        if (item == null)
-                        {
-                            IsTrue = false;
-                            continue;
-                        }
-                        if (item.Children != null)
-                        {
-                            Children.AddRange(item.Children);
-                            Children.Add(null);
-                        }
-                        if (IsMatch(selectorPart.Item1, item))
-                        {
-                            IsTrue = true;
-                            continue;
-                        }
-                    }
-                    Elements.Clear();
-                    Elements.AddRange(Children);
-                    Children.Clear();
-                }
-            }
-            #endregion
-
-            #region Selector *
-            if (selectorPart.Item2 == ConnectionType.None)
-            {
-                List<IElement> Children = new List<IElement>();
-                List<IElement> Elements = new List<IElement>(elements);
-                while (Elements.Count() != 0)
-                {
-                    foreach (var item in Elements)
-                    {
-                        if (item.Children != null)
-                        {
-                            Children.AddRange(item.Children);
-                        }
                         yield return item;
                     }
-                    Elements.Clear();
-                    Elements.AddRange(Children);
-                    Children.Clear();
-                }
-            }
-            #endregion
-
-            #region EndSelector
-            if (selectorPart.Item2 == ConnectionType.None)
-            {
-                List<IElement> Children = new List<IElement>();
-                List<IElement> Elements = new List<IElement>(elements);
-                while (Elements.Count() != 0)
-                {
-                    foreach (var item in Elements)
+                    if (item == null)
                     {
-                        if (item.Children != null)
+                        IsTrue = false;
+                        continue;
+                    }
+                    if (item.Children != null)
+                    {
+                        Children.AddRange(item.Children);
+                        Children.Add(null);
+                    }
+                    if (IsMatch(selectorPart.Item1, item))
+                    {
+                        IsTrue = true;
+                        continue;
+                    }
+                }
+                Elements.Clear();
+                Elements.AddRange(Children);
+                Children.Clear();
+            }
+        }
+        static IEnumerable<IElement> SelectImmediatlyAfter(IEnumerable<IElement> elements, Tuple<string, ConnectionType> selectorPart)
+        {
+            List<IElement> Children = new List<IElement>();
+            List<IElement> Elements = new List<IElement>(elements);
+
+            while (Elements.Count() != 0)
+            {
+                bool IsTrue = false;
+                foreach (var item in Elements)
+                {
+                    if (item != null && IsTrue)
+                    {
+                        yield return item;
+                        if (!IsMatch(selectorPart.Item1, item))
                         {
-                            Children.AddRange(item.Children);
-                        }
-                        if (IsMatch(selectorPart.Item1, item))
-                        {
-                            yield return item;
+                            IsTrue = false;
                         }
                     }
-                    Elements.Clear();
-                    Elements.AddRange(Children);
-                    Children.Clear();
+                    if (item == null)
+                    {
+                        IsTrue = false;
+                        continue;
+                    }
+                    if (item.Children != null)
+                    {
+                        Children.AddRange(item.Children);
+                        Children.Add(null);
+                    }
+                    if (IsMatch(selectorPart.Item1, item))
+                    {
+                        IsTrue = true;
+                        continue;
+                    }
                 }
+                Elements.Clear();
+                Elements.AddRange(Children);
+                Children.Clear();
             }
-            #endregion
+        }
+        static IEnumerable<IElement> SelectAll(IEnumerable<IElement> elements, Tuple<string, ConnectionType> selectorPart)
+        {
+            List<IElement> Children = new List<IElement>();
+            List<IElement> Elements = new List<IElement>(elements);
+            while (Elements.Count() != 0)
+            {
+                foreach (var item in Elements)
+                {
+                    if (item.Children != null)
+                    {
+                        Children.AddRange(item.Children);
+                    }
+                    if (IsMatch(selectorPart.Item1, item))
+                    {
+                        yield return item;
+                    }
+                }
+                Elements.Clear();
+                Elements.AddRange(Children);
+                Children.Clear();
+            }
+        }
+
+        private static IEnumerable<IElement> SelectPart(IEnumerable<IElement> elements, Tuple<string, ConnectionType> selectorPart)
+        {
+            if (selectorPart.Item2 == ConnectionType.DirectChildren)
+            {
+                return SelectDirectChildren(elements, selectorPart);
+            }
+            if (selectorPart.Item2 == ConnectionType.Children)
+            {
+                return SelectChildren(elements, selectorPart);
+            }
+            if (selectorPart.Item2 == ConnectionType.After)
+            {
+                return SelectAfter(elements, selectorPart);
+            }
+            if (selectorPart.Item2 == ConnectionType.ImmideatlyAfter)
+            {
+                return SelectImmediatlyAfter(elements, selectorPart);
+            }
+            if (selectorPart.Item2 == ConnectionType.None)
+            {
+                return SelectAll(elements, selectorPart);
+            }
+            throw new ArgumentException("Invalid selectorPart");
         }
     }
 
