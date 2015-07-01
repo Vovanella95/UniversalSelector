@@ -7,39 +7,74 @@ using System.Text.RegularExpressions;
 
 namespace UniParser
 {
-    public class ElementSelector
+    public class Selector2 : ISelector2
     {
-        public static IEnumerable<IElement> QuerySelectorAll(IDocument document, ISelector selector)
+        public string SelectorText { get; set; }
+        public virtual IEnumerable<IElement> Select(IEnumerable<IElement> elements) { throw new Exception(); }
+        public IEnumerable<IElement> QuerySelector(IEnumerable<IElement> elements)
         {
-            var temp = document.Children;
-            if (selector.Parts.Count() == 1 && selector.Parts.First().Item1 == "*")
-            {
-                return SelectChildren(new List<IElement>() { new Element() { Children = document.Children } }, new Tuple<string, ConnectionType>("", ConnectionType.Children));
-            }
-            foreach (var selectorPart in selector.Parts)
-            {
-                if (selectorPart.Item1 != "*")
-                {
-                    temp = SelectPart(temp, selectorPart);
-                }
-            }
-            return temp;
+            return NextSelector == null ? Select(elements) : NextSelector.QuerySelector(Select(elements));
         }
-        public static IEnumerable<string> QuerySelectorAll(IDocument document, ISelector selector, string property)
+        public ISelector2 NextSelector;
+        public static ISelector2 Create(string text)
         {
-            foreach (var item in QuerySelectorAll(document, selector))
+            var delimeters = new char[] { ' ', '>', '+', '~' };
+            int i2 = 0;
+            while (i2 < text.Length && !delimeters.Contains(text[i2]))
             {
-                if (item.Attributes.Any(w => w.Name == property))
-                {
-                    yield return item.Attributes.First(w => w.Name == property).Value;
-                }
+                i2++;
             }
-        }
+            if (i2 == text.Length)
+            {
+                return new AllSelector()
+                {
+                    SelectorText = text
+                };
+            }
+            string next = text.Substring(i2 + 1, text.Length - i2 - 1);
+            var nextSelector = string.IsNullOrEmpty(next) ? null : Create(next);
+            var selText = text.Substring(0, i2);
 
-        #region Private methods
-        public static bool IsMatch(string selectorPart, IElement element)
+            if (text[i2] == ' ')
+            {
+                return new ChildSelector()
+                {
+                    SelectorText = selText,
+                    NextSelector = nextSelector
+                };
+            }
+            if (text[i2] == '>')
+            {
+                return new DirectChildSelector()
+                {
+                    SelectorText = selText,
+                    NextSelector = nextSelector
+                };
+            }
+            if (text[i2] == '+')
+            {
+                return new ImmediatlyAfterSelector()
+                {
+                    SelectorText = selText,
+                    NextSelector = nextSelector
+                };
+            }
+            if (text[i2] == '~')
+            {
+                return new AfterSelector()
+                {
+                    SelectorText = selText,
+                    NextSelector = nextSelector
+                };
+            }
+            throw new ArgumentException();
+        }
+        public Selector2() { }
+
+        #region Private Methods
+        protected bool IsMatch(string selectorPart, IElement element)
         {
-            if (selectorPart == "$") return true;
+            if (selectorPart == "*") return true;
             Regex comparer = new Regex(@"(?'classes'[.])|(?'id'[#])|(?'attribs'\W\w+\W?\W\w+\W)|(?'tag'[.#=]*)");
             var selects = SplitProperties(selectorPart);
             var attributes = selects.Where(w => comparer.Match(w).Groups["attribs"].Success).Select(w => ParseAttributes(w));
@@ -93,220 +128,15 @@ namespace UniParser
                 Value = val2
             };
         }
-        static IEnumerable<IElement> SelectDirectChildren(IEnumerable<IElement> elements, Tuple<string, ConnectionType> selectorPart)
-        {
-            List<IElement> Children = new List<IElement>();
-            List<IElement> Elements = new List<IElement>(elements);
-            while (Elements.Count() != 0)
-            {
-                foreach (var item in Elements)
-                {
-                    if (item.Children != null)
-                    {
-                        Children.AddRange(item.Children);
-                    }
-                    if (IsMatch(selectorPart.Item1, item))
-                    {
-                        if (item.Children != null)
-                        {
-                            foreach (var element in item.Children)
-                            {
-                                yield return element;
-                            }
-                        }
-                    }
-                }
-                Elements.Clear();
-                Elements.AddRange(Children);
-                Children.Clear();
-            }
-        }
-        static IEnumerable<IElement> SelectChildren(IEnumerable<IElement> elements, Tuple<string, ConnectionType> selectorPart)
-        {
-            List<IElement> Children = new List<IElement>();
-            List<IElement> Elements = new List<IElement>(elements);
-            while (Elements.Count() != 0)
-            {
-                foreach (var item in Elements)
-                {
-                    if (item.Children != null)
-                    {
-                        Children.AddRange(item.Children);
-                    }
-                    if (IsMatch(selectorPart.Item1, item))
-                    {
-                        List<IElement> parrent;
-                        if (item.Children != null)
-                        {
-                            parrent = new List<IElement>(item.Children);
-                        }
-                        else
-                        {
-                            parrent = new List<IElement>();
-                        }
-                        var children = new List<IElement>();
-                        while (parrent.Count() != 0)
-                        {
-                            foreach (var element in parrent)
-                            {
-                                if (element.Children != null && !IsMatch(selectorPart.Item1, element))
-                                {
-                                    children.AddRange(element.Children);
-                                }
-                                yield return element;
-                            }
-                            parrent.Clear();
-                            parrent.AddRange(children);
-                            children.Clear();
-                        }
-                    }
-                }
-                Elements.Clear();
-                Elements.AddRange(Children);
-                Children.Clear();
-            }
-        }
-        static IEnumerable<IElement> SelectAfter(IEnumerable<IElement> elements, Tuple<string, ConnectionType> selectorPart)
-        {
-            List<IElement> Children = new List<IElement>();
-            List<IElement> Elements = new List<IElement>(elements);
-            while (Elements.Count() != 0)
-            {
-                bool IsTrue = false;
-                foreach (var item in Elements)
-                {
-                    if (item != null && IsTrue)
-                    {
-                        yield return item;
-                    }
-                    if (item == null)
-                    {
-                        IsTrue = false;
-                        continue;
-                    }
-                    if (item.Children != null)
-                    {
-                        Children.AddRange(item.Children);
-                        Children.Add(null);
-                    }
-                    if (IsMatch(selectorPart.Item1, item))
-                    {
-                        IsTrue = true;
-                        continue;
-                    }
-                }
-                Elements.Clear();
-                Elements.AddRange(Children);
-                Children.Clear();
-            }
-        }
-        static IEnumerable<IElement> SelectImmediatlyAfter(IEnumerable<IElement> elements, Tuple<string, ConnectionType> selectorPart)
-        {
-            List<IElement> Children = new List<IElement>();
-            List<IElement> Elements = new List<IElement>(elements);
-            while (Elements.Count() != 0)
-            {
-                bool IsTrue = false;
-                foreach (var item in Elements)
-                {
-                    if (item != null && IsTrue)
-                    {
-                        yield return item;
-                        if (!IsMatch(selectorPart.Item1, item))
-                        {
-                            IsTrue = false;
-                        }
-                    }
-                    if (item == null)
-                    {
-                        IsTrue = false;
-                        continue;
-                    }
-                    if (item.Children != null)
-                    {
-                        Children.AddRange(item.Children);
-                        Children.Add(null);
-                    }
-                    if (IsMatch(selectorPart.Item1, item))
-                    {
-                        IsTrue = true;
-                        continue;
-                    }
-                }
-                Elements.Clear();
-                Elements.AddRange(Children);
-                Children.Clear();
-            }
-        }
-        static IEnumerable<IElement> SelectAll(IEnumerable<IElement> elements, Tuple<string, ConnectionType> selectorPart)
-        {
-            List<IElement> Children = new List<IElement>();
-            List<IElement> Elements = new List<IElement>(elements);
-            while (Elements.Count() != 0)
-            {
-                foreach (var item in Elements)
-                {
-                    if (item.Children != null)
-                    {
-                        Children.AddRange(item.Children);
-                    }
-                    if (IsMatch(selectorPart.Item1, item))
-                    {
-                        yield return item;
-                    }
-                }
-                Elements.Clear();
-                Elements.AddRange(Children);
-                Children.Clear();
-            }
-        }
-        static IEnumerable<IElement> SelectPart(IEnumerable<IElement> elements, Tuple<string, ConnectionType> selectorPart)
-        {
-            if (selectorPart.Item2 == ConnectionType.DirectChildren)
-            {
-                return SelectDirectChildren(elements, selectorPart);
-            }
-            if (selectorPart.Item2 == ConnectionType.Children)
-            {
-                return SelectChildren(elements, selectorPart);
-            }
-            if (selectorPart.Item2 == ConnectionType.After)
-            {
-                return SelectAfter(elements, selectorPart);
-            }
-            if (selectorPart.Item2 == ConnectionType.ImmideatlyAfter)
-            {
-                return SelectImmediatlyAfter(elements, selectorPart);
-            }
-            if (selectorPart.Item2 == ConnectionType.None)
-            {
-                return SelectAll(elements, selectorPart);
-            }
-            throw new ArgumentException("Invalid selectorPart");
-        }
         #endregion
-    }
-
-
-
-    public class Selector2
-    {
-        public string SelectorText;
-        public virtual IEnumerable<IElement> Select(IEnumerable<IElement> elements) { throw new Exception(); }
-        public IEnumerable<IElement> QuerySelector(IEnumerable<IElement> elements)
-        {
-            return NextSelector == null ? Select(elements) : NextSelector.QuerySelector(Select(elements));
-        }
-        public Selector2 NextSelector;
     }
 
     public class DirectChildSelector : Selector2
     {
         public override IEnumerable<IElement> Select(IEnumerable<IElement> elements)
         {
-            List<IElement> Token = new List<IElement>();
-            List<IElement> Children = new List<IElement>();
-            List<IElement> Elements = new List<IElement>(elements);
+            var Children = new List<IElement>();
+            var Elements = new List<IElement>(elements);
             while (Elements.Count() != 0)
             {
                 foreach (var item in Elements)
@@ -315,7 +145,7 @@ namespace UniParser
                     {
                         Children.AddRange(item.Children);
                     }
-                    if (ElementSelector.IsMatch(SelectorText, item))
+                    if (IsMatch(SelectorText, item))
                     {
                         if (item.Children != null)
                         {
@@ -347,7 +177,7 @@ namespace UniParser
                     {
                         Children.AddRange(item.Children);
                     }
-                    if (ElementSelector.IsMatch(SelectorText, item))
+                    if (IsMatch(SelectorText, item))
                     {
                         List<IElement> parrent;
                         if (item.Children != null)
@@ -363,7 +193,7 @@ namespace UniParser
                         {
                             foreach (var element in parrent)
                             {
-                                if (element.Children != null && !ElementSelector.IsMatch(SelectorText, element))
+                                if (element.Children != null && !IsMatch(SelectorText, element))
                                 {
                                     children.AddRange(element.Children);
                                 }
@@ -407,7 +237,7 @@ namespace UniParser
                         Children.AddRange(item.Children);
                         Children.Add(null);
                     }
-                    if (ElementSelector.IsMatch(SelectorText, item))
+                    if (IsMatch(SelectorText, item))
                     {
                         IsTrue = true;
                         continue;
@@ -434,7 +264,7 @@ namespace UniParser
                     if (item != null && IsTrue)
                     {
                         yield return item;
-                        if (!ElementSelector.IsMatch(SelectorText, item))
+                        if (IsMatch(SelectorText, item))
                         {
                             IsTrue = false;
                         }
@@ -449,7 +279,7 @@ namespace UniParser
                         Children.AddRange(item.Children);
                         Children.Add(null);
                     }
-                    if (ElementSelector.IsMatch(SelectorText, item))
+                    if (IsMatch(SelectorText, item))
                     {
                         IsTrue = true;
                         continue;
@@ -461,4 +291,20 @@ namespace UniParser
             }
         }
     }
+
+    public class AllSelector : Selector2
+    {
+        public override IEnumerable<IElement> Select(IEnumerable<IElement> elements)
+        {
+            foreach (var item in elements)
+            {
+                if (IsMatch(SelectorText, item))
+                {
+                    yield return item;
+                }
+            }
+        }
+    }
+
+
 }

@@ -28,6 +28,13 @@ namespace UniParser
         IEnumerable<Tuple<string, ConnectionType>> Parts { get; set; }
     }
 
+    public interface ISelector2
+    {
+        string SelectorText { get; set; }
+        IEnumerable<IElement> Select(IEnumerable<IElement> elements);
+        IEnumerable<IElement> QuerySelector(IEnumerable<IElement> doc);
+    }
+
     public enum ConnectionType
     {
         None = 0,

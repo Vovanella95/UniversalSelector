@@ -108,130 +108,45 @@ namespace UnitTestProject1
         #endregion
 
         [TestMethod]
-        public void IsMatchMustReturnRightResult()
+        public void QuerySelectorMustDoSimpleSelects()
         {
-            Element house = new Element()
+            List<string> elements = new List<string>()
             {
-                Name = "House",
-                Id = "22",
-                Classes = new List<string> { "Big", "Nice", "Wonderful" },
-                Attributes = new List<UniParser.Attribute> {
-                    new UniParser.Attribute() {Name = "Yard", Value = "Yes"},
-                    new UniParser.Attribute() {Name = "Stairs", Value = "Good"},
-                    new UniParser.Attribute() {Name = "Levels", Value = "2"}
-                }
-            };
-            Assert.IsTrue(ElementSelector.IsMatch("House#22.Big.Nice.Wonderful[Yard=Yes]", house));
-            Assert.IsTrue(ElementSelector.IsMatch("[Yard=Yes]", house));
-            Assert.IsTrue(ElementSelector.IsMatch(".Big.Nice.Wonderful", house));
-        }
-
-        [TestMethod]
-        public void QuerySelectorAllMustSelectChildElements()
-        {
-            Match("House *", new List<string>()
-            {
-                "Name = Koridor",
-                "Name = Citchen",
-                "Name = Bigroom",
-                "Name = Table",
                 "Name = Chear",
                 "Name = Gas",
-                "Name = Citchen",
-                "Name = TVSet",
-                "Name = Lol",
-                "Name = Lol",
-                "Name = foof",
                 "Name = Citchen"
-            });
-        }
-
-        [TestMethod]
-        public void QuerySelectorAllMustSelectDirectChildElements()
-        {
-            Match("House>*", new List<string>()
-            {
-                "Name = Koridor",
-                "Name = Citchen",
-                "Name = Bigroom",
-            });
-        }
-
-        [TestMethod]
-        public void QuerySelectorAllMustSelectAfterElements()
-        {
-            Match("Lol~*", new List<string>()
-            {
-                "Name = Lol",
-                "Name = foof",
-                "Name = Citchen"
-            });
-        }
-
-        [TestMethod]
-        public void QuerySelectorAllMustSelectImmediatlyAfterElements()
-        {
-            Match("Lol+*", new List<string>()
-            {
-                "Name = Lol",
-                "Name = foof"
-            });
-        }
-
-        [TestMethod]
-        public void QuerySelectorAllMustSelectCombinedElements()
-        {
-            Match("House>Citchen~*", new List<string>()
-            {
-                "Name = Bigroom",
-            });
-        }
-
-        [TestMethod]
-        public void QuerySelectorAllMustSelectVeryCombinedWithAttribsElements()
-        {
-            Match("House .nice [ScreenResolution=1920x1080]", new List<string>()
-            {
-                "Name = TVSet",
-            });
-        }
-
-        [TestMethod]
-        public void QuerySelectorAllWithParameterShouldReturnRightResult()
-        {
-            var getedTokens = ElementSelector.QuerySelectorAll(doc, new Selector("House Bigroom *"), "ScreenResolution");
-            var tokens = new List<string>
-            {
-                "1920x1080"
             };
-            Assert.IsTrue(tokens.All(w => getedTokens.Contains(w)) && getedTokens.All(w => tokens.Contains(w)));
+            Match(elements, "Table~*");
         }
 
         [TestMethod]
-        public void QuerySelectorMustResutnAllElementsIsSelectorIsStar()
+        public void QuerySelectorMustDoCombinedSelects()
         {
-            Match("*", new List<string>()
-                {
-                    "Name = House",
-                    "Name = Koridor",
-                    "Name = Citchen",
-                    "Name = Bigroom",
-                    "Name = Table",
-                    "Name = Chear",
-                    "Name = Gas",
-                    "Name = Citchen",
-                    "Name = TVSet",
-                    "Name = Lol",
-                    "Name = Lol",
-                    "Name = foof",
-                    "Name = Citchen"
-                });
+            List<string> elements = new List<string>()
+            {
+                "Name = Citchen",
+                "Name = Lol",
+                "Name = Lol",
+                "Name = foof",
+                "Name = Citchen"
+            };
+            Match(elements, "Citchen Gas~*");
         }
 
-        private void Match(string selector, IEnumerable<string> tokens)
+        public void Match(IEnumerable<string> elements, string selector)
         {
-            var getedTokens = ElementSelector.QuerySelectorAll(doc, new Selector(selector)).Select(w => w.ToString());
-            Assert.IsTrue(tokens.All(w => getedTokens.Contains(w)) && getedTokens.All(w => tokens.Contains(w)));
+            var token = (Selector2.Create(selector)).QuerySelector(doc.Children).Select(w => w.ToString());
+            bool temp = true;
+
+            foreach (var item in Enumerable.Concat(elements, token))
+            {
+                if (!elements.Contains(item) || !token.Contains(item))
+                {
+                    temp = false;
+                    break;
+                }
+            }
+            Assert.IsTrue(temp);
         }
     }
 }
