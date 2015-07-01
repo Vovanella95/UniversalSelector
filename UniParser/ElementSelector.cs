@@ -135,30 +135,23 @@ namespace UniParser
     {
         public override IEnumerable<IElement> Select(IEnumerable<IElement> elements)
         {
-            var Children = new List<IElement>();
-            var Elements = new List<IElement>(elements);
-            while (Elements.Count() != 0)
+            var queue = new Queue<IElement>();
+            foreach (var item in elements)
             {
-                foreach (var item in Elements)
+                queue.Enqueue(item);
+            }
+            IElement node;
+            while (queue.Count != 0)
+            {
+                node = queue.Dequeue();
+                if (node.Children == null) continue;
+                if (IsMatch(SelectorText, node))
                 {
-                    if (item.Children != null)
-                    {
-                        Children.AddRange(item.Children);
-                    }
-                    if (IsMatch(SelectorText, item))
-                    {
-                        if (item.Children != null)
-                        {
-                            foreach (var element in item.Children)
-                            {
-                                yield return element;
-                            }
-                        }
-                    }
+                    foreach (var item in node.Children)
+                        yield return item;
                 }
-                Elements.Clear();
-                Elements.AddRange(Children);
-                Children.Clear();
+                foreach (var child in node.Children)
+                    queue.Enqueue(child);
             }
         }
     }
@@ -167,47 +160,39 @@ namespace UniParser
     {
         public override IEnumerable<IElement> Select(IEnumerable<IElement> elements)
         {
-            List<IElement> Children = new List<IElement>();
-            List<IElement> Elements = new List<IElement>(elements);
-            while (Elements.Count() != 0)
+            var queue = new Queue<IElement>();
+            foreach (var item in elements)
             {
-                foreach (var item in Elements)
+                queue.Enqueue(item);
+            }
+            IElement node;
+            while (queue.Count != 0)
+            {
+                node = queue.Dequeue();
+                if(node==null)
                 {
-                    if (item.Children != null)
+                    continue;
+                }
+                if (node.Children == null) continue;
+                if (IsMatch(SelectorText, node))
+                {
+                    var queue2 = new Queue<IElement>();
+                    foreach (var item in node.Children)
                     {
-                        Children.AddRange(item.Children);
+                        queue2.Enqueue(item);
                     }
-                    if (IsMatch(SelectorText, item))
+                    IElement node2;
+                    while (queue2.Count != 0)
                     {
-                        List<IElement> parrent;
-                        if (item.Children != null)
-                        {
-                            parrent = new List<IElement>(item.Children);
-                        }
-                        else
-                        {
-                            parrent = new List<IElement>();
-                        }
-                        var children = new List<IElement>();
-                        while (parrent.Count() != 0)
-                        {
-                            foreach (var element in parrent)
-                            {
-                                if (element.Children != null && !IsMatch(SelectorText, element))
-                                {
-                                    children.AddRange(element.Children);
-                                }
-                                yield return element;
-                            }
-                            parrent.Clear();
-                            parrent.AddRange(children);
-                            children.Clear();
-                        }
+                        node2 = queue2.Dequeue();
+                        yield return node2;
+                        if (node2.Children == null || IsMatch(SelectorText, node2)) continue;
+                        foreach (var child in node2.Children)
+                            queue2.Enqueue(child);
                     }
                 }
-                Elements.Clear();
-                Elements.AddRange(Children);
-                Children.Clear();
+                foreach (var child in node.Children)
+                    queue.Enqueue(child);
             }
         }
     }
@@ -216,36 +201,42 @@ namespace UniParser
     {
         public override IEnumerable<IElement> Select(IEnumerable<IElement> elements)
         {
-            List<IElement> Children = new List<IElement>();
-            List<IElement> Elements = new List<IElement>(elements);
-            while (Elements.Count() != 0)
+            var queue = new Queue<IElement>();
+            foreach (var item in elements)
             {
-                bool IsTrue = false;
-                foreach (var item in Elements)
+                queue.Enqueue(item);
+            }
+            IElement node;
+
+            bool temp = false;
+            while (queue.Count != 0)
+            {
+                node = queue.Dequeue();
+                if (node == null)
                 {
-                    if (item != null && IsTrue)
+                    temp = false;
+                    continue;
+                }
+                if (IsMatch(SelectorText, node))
+                {
+                    if(temp)
                     {
-                        yield return item;
+                        yield return node;
                     }
-                    if (item == null)
+                    temp = true;
+                }
+                else
+                {
+                    if (temp)
                     {
-                        IsTrue = false;
-                        continue;
-                    }
-                    if (item.Children != null)
-                    {
-                        Children.AddRange(item.Children);
-                        Children.Add(null);
-                    }
-                    if (IsMatch(SelectorText, item))
-                    {
-                        IsTrue = true;
-                        continue;
+                        yield return node;
                     }
                 }
-                Elements.Clear();
-                Elements.AddRange(Children);
-                Children.Clear();
+                if (node.Children == null) continue;
+
+                queue.Enqueue(null);
+                foreach (var child in node.Children)
+                    queue.Enqueue(child);
             }
         }
     }
@@ -254,40 +245,41 @@ namespace UniParser
     {
         public override IEnumerable<IElement> Select(IEnumerable<IElement> elements)
         {
-            List<IElement> Children = new List<IElement>();
-            List<IElement> Elements = new List<IElement>(elements);
-            while (Elements.Count() != 0)
+            var queue = new Queue<IElement>();
+            foreach (var item in elements)
             {
-                bool IsTrue = false;
-                foreach (var item in Elements)
+                queue.Enqueue(item);
+            }
+            IElement node;
+
+            bool temp = false;
+            while (queue.Count != 0)
+            {
+                node = queue.Dequeue();
+                if (node == null)
                 {
-                    if (item != null && IsTrue)
+                    temp = false;
+                    continue;
+                }
+                    if (IsMatch(SelectorText, node))
                     {
-                        yield return item;
-                        if (IsMatch(SelectorText, item))
+                        if(temp)
                         {
-                            IsTrue = false;
+                            yield return node;
+                        }
+                        temp = true;
+                    }
+                    else
+                    {
+                        if (temp)
+                        {
+                            yield return node;
+                            temp = false;
                         }
                     }
-                    if (item == null)
-                    {
-                        IsTrue = false;
-                        continue;
-                    }
-                    if (item.Children != null)
-                    {
-                        Children.AddRange(item.Children);
-                        Children.Add(null);
-                    }
-                    if (IsMatch(SelectorText, item))
-                    {
-                        IsTrue = true;
-                        continue;
-                    }
-                }
-                Elements.Clear();
-                Elements.AddRange(Children);
-                Children.Clear();
+                if (node.Children == null) continue;
+                foreach (var child in node.Children)
+                    queue.Enqueue(child);
             }
         }
     }
@@ -296,13 +288,7 @@ namespace UniParser
     {
         public override IEnumerable<IElement> Select(IEnumerable<IElement> elements)
         {
-            foreach (var item in elements)
-            {
-                if (IsMatch(SelectorText, item))
-                {
-                    yield return item;
-                }
-            }
+            return elements.Where(w => IsMatch(SelectorText, w));
         }
     }
 
