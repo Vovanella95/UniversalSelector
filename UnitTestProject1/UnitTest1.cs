@@ -129,6 +129,59 @@ namespace UnitTestProject1
             Match(elements, "Citchen Gas~*");
         }
 
+        [TestMethod]
+        public void QuerySelectorMustDoAfterThenChildrenSelects()
+        {
+            List<string> elements = new List<string>()
+            {
+                "Name = Table",
+                "Name = Chear",
+                "Name = Gas",
+                "Name = Citchen",
+                "Name = Lol",
+                "Name = Lol",
+                "Name = foof",
+                "Name = Citchen"
+            };
+            Match(elements, "Koridor~Citchen *");
+        }
+
+        [TestMethod]
+        public void QuerySelectorMustMustDoChildThenAfterSelects()
+        {
+            List<string> elements = new List<string>()
+            {
+                "Name = Lol",
+                "Name = foof"
+            };
+            Match(elements, "Citchen Lol+*");
+        }
+
+        [TestMethod]
+        public void QuerySelectorMustMustDoDirectChildSelects()
+        {
+            List<string> elements = new List<string>()
+            {
+                "Name = Koridor",
+                "Name = Citchen",
+                "Name = Bigroom"
+            };
+            Match(elements, "House>*");
+        }
+
+        [TestMethod]
+        public void QuerySelectorMustMustDoAfterSelects()
+        {
+            List<string> elements = new List<string>()
+            {
+                "Name = Citchen",
+                "Name = Bigroom"
+            };
+            Match(elements, "Koridor~*");
+        }
+
+
+
         public void Match(IEnumerable<string> elements, string selector)
         {
             var token = (Selector2.Create(selector)).QuerySelector(doc.Children).Select(w => w.ToString());
@@ -146,4 +199,3 @@ namespace UnitTestProject1
         }
     }
 }
-
