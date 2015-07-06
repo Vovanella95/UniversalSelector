@@ -13,7 +13,7 @@ namespace UniParser
         public virtual IEnumerable<IElement> Select(IEnumerable<IElement> elements) { throw new Exception(); }
         public IEnumerable<IElement> QuerySelector(IEnumerable<IElement> elements)
         {
-            return NextSelector == null ? Select(elements) : NextSelector.QuerySelector(Select(elements));
+            return NextSelector == null ? Select(elements).Where(w=>w!=null).Distinct() : NextSelector.QuerySelector(Select(elements));
         }
         public ISelector2 NextSelector;
         public static ISelector2 Create(string text)
@@ -144,12 +144,18 @@ namespace UniParser
             while (queue.Count != 0)
             {
                 node = queue.Dequeue();
+                if (node == null)
+                {
+                    yield return null;
+                    continue;
+                }
                 if (node.Children == null) continue;
                 if (IsMatch(SelectorText, node))
                 {
                     foreach (var item in node.Children)
                         yield return item;
                 }
+                queue.Enqueue(null);
                 foreach (var child in node.Children)
                     queue.Enqueue(child);
             }
@@ -171,6 +177,7 @@ namespace UniParser
                 node = queue.Dequeue();
                 if(node==null)
                 {
+                    yield return null;
                     continue;
                 }
                 if (node.Children == null) continue;
@@ -185,12 +192,20 @@ namespace UniParser
                     while (queue2.Count != 0)
                     {
                         node2 = queue2.Dequeue();
+                        if(node2==null)
+                        {
+                            yield return null;
+                            continue;
+                        }
                         yield return node2;
                         if (node2.Children == null || IsMatch(SelectorText, node2)) continue;
+
+                        queue2.Enqueue(null);
                         foreach (var child in node2.Children)
                             queue2.Enqueue(child);
                     }
                 }
+                queue.Enqueue(null);
                 foreach (var child in node.Children)
                     queue.Enqueue(child);
             }
@@ -219,7 +234,7 @@ namespace UniParser
                 }
                 if (IsMatch(SelectorText, node))
                 {
-                    if(temp)
+                    if (temp)
                     {
                         yield return node;
                     }
@@ -233,7 +248,6 @@ namespace UniParser
                     }
                 }
                 if (node.Children == null) continue;
-
                 queue.Enqueue(null);
                 foreach (var child in node.Children)
                     queue.Enqueue(child);
@@ -261,22 +275,22 @@ namespace UniParser
                     temp = false;
                     continue;
                 }
-                    if (IsMatch(SelectorText, node))
+                if (IsMatch(SelectorText, node))
+                {
+                    if (temp)
                     {
-                        if(temp)
-                        {
-                            yield return node;
-                        }
-                        temp = true;
+                        yield return node;
                     }
-                    else
+                    temp = true;
+                }
+                else
+                {
+                    if (temp)
                     {
-                        if (temp)
-                        {
-                            yield return node;
-                            temp = false;
-                        }
+                        yield return node;
+                        temp = false;
                     }
+                }
                 if (node.Children == null) continue;
                 foreach (var child in node.Children)
                     queue.Enqueue(child);

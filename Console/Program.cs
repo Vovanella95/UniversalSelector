@@ -100,16 +100,14 @@ namespace ConsoleApp1
                                         }
                                     }
                                 }
-                                
                             }
                         }
                     }
                 }
             };
             #endregion
-
-            var sel = Selector2.Create("House Citchen~*");
-            var k = sel.QuerySelector(doc.Children).Distinct().ToList();
+            var sel = Selector2.Create("Citchen Gas~");
+            var k = sel.QuerySelector(doc.Children).ToList();
         }
     }
 }

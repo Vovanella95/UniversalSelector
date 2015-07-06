@@ -124,10 +124,6 @@ namespace UnitTestProject1
         {
             List<string> elements = new List<string>()
             {
-                "Name = Citchen",
-                "Name = Lol",
-                "Name = Lol",
-                "Name = foof",
                 "Name = Citchen"
             };
             Match(elements, "Citchen Gas~*");
