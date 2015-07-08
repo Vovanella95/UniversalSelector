@@ -14,13 +14,15 @@ namespace NewSuperModifyedSelector
 
     public class Element
     {
-        public int Name;
-        public int Id;
-        public IEnumerable<string> Classes;
+        public string Name;
+        public string Id;
         public IEnumerable<Attribute> Attributes;
         public IEnumerable<Element> Children;
-        private IEnumerable<int[]> Combinations;
+    }
 
+    public class TemplateElement : Element
+    {
+        private IEnumerable<int[]> Combinations;
         public bool CompareAttributes(IEnumerable<Attribute> neededAttribs, IEnumerable<Attribute> tokenAttribs)
         {
             int dim = neededAttribs.Count();
@@ -42,9 +44,9 @@ namespace NewSuperModifyedSelector
                     currentValues.Add(index);
                 }
                 currentState = GetStateNumber(dim, currentValues);
-                //if (currentState == count) return true;
+                if (currentState == count) return true;
             }
-            return currentState == count;
+            return false;
         }
         private static IEnumerable<int[]> GenerateAllPermutations(int number)
         {
@@ -92,6 +94,42 @@ namespace NewSuperModifyedSelector
                 i++;
             }
             return i;
+        }
+        public bool IsMatch(Element element)
+        {
+            if (!string.IsNullOrEmpty(Name) && Name != element.Name) return false;
+            if (!string.IsNullOrEmpty(Id) && Id != element.Id) return false;
+            if (Attributes != null)
+            {
+                return CompareAttributes(Attributes, element.Attributes);
+            }
+            return true;
+        }
+    }
+
+    public class Selector
+    {
+        public static IEnumerable<Element> QuerySelector(TemplateElement template, Element root)
+        {
+            if (root == null) throw new ArgumentNullException();
+            var nodeStack = new Stack<Element>();
+            nodeStack.Push(root);
+
+            while (nodeStack.Count != 0)
+            {
+                var node = nodeStack.Pop();
+                if (node.Children != null)
+                {
+                    foreach (var subNode in node.Children.Reverse())
+                    {
+                        nodeStack.Push(subNode);
+                    }
+                }
+                if (template.IsMatch(node))
+                {
+                    yield return node;
+                }
+            }
         }
     }
 }

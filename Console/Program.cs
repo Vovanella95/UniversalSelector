@@ -12,7 +12,7 @@ namespace ConsoleApp1
     {
         static void Main(string[] args)
         {
-
+            #region Attributes
             var list1 = new List<NewSuperModifyedSelector.Attribute>()
             {
                 new NewSuperModifyedSelector.Attribute()
@@ -31,7 +31,6 @@ namespace ConsoleApp1
                     Value = "hello"
                 }
             };
-
             var list2 = new List<NewSuperModifyedSelector.Attribute>()
             {
                 new NewSuperModifyedSelector.Attribute()
@@ -65,20 +64,55 @@ namespace ConsoleApp1
                     Value = "hello"
                 }
             };
+            #endregion
 
-
-
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-            bool a;
-            var el = new Element();
-            for (int i = 0; i < 1000000; i++)
+            #region Elements
+            var root = new Element()
             {
-                a = el.CompareAttributes(list1, list2);
-            }
-            sw.Stop();
-            Console.WriteLine(sw.ElapsedTicks);
-            Console.ReadLine();
+                Children = new List<Element>()
+                {
+                    new Element()
+                    {
+                        Id = "idshnick",
+                        Name = "TheName",
+                        Attributes = list1
+                    },
+                    new Element()
+                    {
+                        Id = "idshnick",
+                        Name = "TheName",
+                        Attributes = list2
+                    },
+                    new Element()
+                    {
+                        Attributes = list2,
+                        Children = new List<Element>()
+                    },
+                    new Element()
+                    {
+                        Id = "idshnick",
+                        Attributes = list1
+                    }
+                }
+
+            };
+            #endregion
+
+            #region Template
+            var template = new TemplateElement()
+            {
+                Name = "TheName",
+                Attributes = list1
+            };
+            #endregion
+
+
+
+            var k = Selector.QuerySelector(template, root);
+
+
+
+
         }
     }
 }
