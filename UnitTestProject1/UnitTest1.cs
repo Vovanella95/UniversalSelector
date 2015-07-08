@@ -1,201 +1,142 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using UniParser;
 using System.Collections.Generic;
 using System.Collections;
 using System.Linq;
+using NewSuperModifyedSelector;
 
 namespace UnitTestProject1
 {
     [TestClass]
     public class UnitTest1
     {
-        #region Document
-        Document doc = new Document()
+        #region Attributes
+        static List<NewSuperModifyedSelector.Attribute> list1 = new List<NewSuperModifyedSelector.Attribute>()
+            {
+                new NewSuperModifyedSelector.Attribute()
+                {
+                    Name = "href",
+                    Value = "nothing"
+                },
+                new NewSuperModifyedSelector.Attribute()
+                {
+                    Name = "type",
+                    Value = "tag"
+                },
+                new NewSuperModifyedSelector.Attribute()
+                {
+                    Name = "text",
+                    Value = "hello"
+                }
+            };
+        static List<NewSuperModifyedSelector.Attribute> list2 = new List<NewSuperModifyedSelector.Attribute>()
+            {
+                new NewSuperModifyedSelector.Attribute()
+                {
+                    Name = "ne4w",
+                    Value = "nerws"
+                },
+                new NewSuperModifyedSelector.Attribute()
+                {
+                    Name = "santa",
+                    Value = "claus"
+                },
+                new NewSuperModifyedSelector.Attribute()
+                {
+                    Name = "href",
+                    Value = "nothing"
+                },
+                new NewSuperModifyedSelector.Attribute()
+                {
+                    Name = "new",
+                    Value = "news"
+                },
+                new NewSuperModifyedSelector.Attribute()
+                {
+                    Name = "type",
+                    Value = "tag"
+                },
+                new NewSuperModifyedSelector.Attribute()
+                {
+                    Name = "text",
+                    Value = "hello"
+                }
+            };
+        #endregion
+
+        #region Elements
+        static Element root = new Element()
         {
             Children = new List<Element>()
                 {
                     new Element()
                     {
-                        Name = "House",
+                        Id = "idshnick",
+                        Name = "TheName",
+                        Attributes = list1
+                    },
+                    new Element()
+                    {
+                        Id = "idshnick",
+                        Name = "TheName",
+                        Attributes = list2
+                    },
+                    new Element()
+                    {
+                        Attributes = list2,
                         Children = new List<Element>()
-                        {
-                            new Element()
-                            {
-                                Name = "Koridor"
-                            },
-                            new Element()
-                            {
-                                Name = "Citchen",
-                                Children = new List<Element>()
-                                {
-                                    new Element()
-                                    {
-                                        Name="Table"
-                                    },
-                                    new Element()
-                                    {
-                                        Name="Chear"
-                                    },
-                                    new Element()
-                                    {
-                                        Name="Gas"
-                                    },
-                                    new Element()
-                                    {
-                                        Name = "Citchen",
-                                        Children = new List<Element>()
-                                        {
-                                            new Element()
-                                            {
-                                                Name = "Lol",
-                                                Id = "id1"
-                                            },
-                                            new Element()
-                                            {
-                                                Name = "Lol",
-                                                Id = "id2"
-                                            },
-                                            new Element()
-                                            {
-                                                Name = "foof",
-                                                Id = "id"
-                                            },
-                                            new Element()
-                                            {
-                                                Name = "Citchen",
-                                                Id = "id1"
-                                            }
-                                        }
-                                    }
-                                }
-                            },
-                            new Element()
-                            {
-                                Name = "Bigroom",
-                                Classes = new List<string> {"big","nice"},
-                                Children = new List<Element>()
-                                {
-                                    new Element()
-                                    {
-                                        Name = "TVSet",
-                                        Attributes = new List<UniParser.Attribute>()
-                                        {
-                                            new UniParser.Attribute()
-                                            {
-                                                Name = "ChannelCount",
-                                                Value = "12"
-                                            },
-                                            new UniParser.Attribute()
-                                            {
-                                                Name = "ScreenResolution",
-                                                Value = "1920x1080"
-                                            },
-                                            new UniParser.Attribute()
-                                            {
-                                                Name = "Size",
-                                                Value = "180x100"
-                                            }
-                                        }
-                                    }
-                                }
-                                
-                            }
-                        }
+                    },
+                    new Element()
+                    {
+                        Id = "idshnick",
+                        Attributes = list1
                     }
                 }
+
         };
         #endregion
 
         [TestMethod]
         public void QuerySelectorMustDoSimpleSelects()
         {
-            List<string> elements = new List<string>()
+            TemplateElement template = new TemplateElement()
             {
-                "Name = Chear",
-                "Name = Gas",
-                "Name = Citchen"
+                Name = "TheName",
+                Attributes = list1
             };
-            Match(elements, "Table~*");
+            IsMatch(template, "Name = TheName, Id = idshnick|Name = TheName, Id = idshnick|");
         }
 
         [TestMethod]
-        public void QuerySelectorMustDoCombinedSelects()
+        public void QuerySelectorMustDoSimpleSelects2()
         {
-            List<string> elements = new List<string>()
+            TemplateElement template = new TemplateElement()
             {
-                "Name = Citchen"
-            };
-            Match(elements, "Citchen Gas~*");
-        }
-
-        [TestMethod]
-        public void QuerySelectorMustDoAfterThenChildrenSelects()
-        {
-            List<string> elements = new List<string>()
-            {
-                "Name = Table",
-                "Name = Chear",
-                "Name = Gas",
-                "Name = Citchen",
-                "Name = Lol",
-                "Name = Lol",
-                "Name = foof",
-                "Name = Citchen"
-            };
-            Match(elements, "Koridor~Citchen *");
-        }
-
-        [TestMethod]
-        public void QuerySelectorMustMustDoChildThenAfterSelects()
-        {
-            List<string> elements = new List<string>()
-            {
-                "Name = Lol",
-                "Name = foof"
-            };
-            Match(elements, "Citchen Lol+*");
-        }
-
-        [TestMethod]
-        public void QuerySelectorMustMustDoDirectChildSelects()
-        {
-            List<string> elements = new List<string>()
-            {
-                "Name = Koridor",
-                "Name = Citchen",
-                "Name = Bigroom"
-            };
-            Match(elements, "House>*");
-        }
-
-        [TestMethod]
-        public void QuerySelectorMustMustDoAfterSelects()
-        {
-            List<string> elements = new List<string>()
-            {
-                "Name = Citchen",
-                "Name = Bigroom"
-            };
-            Match(elements, "Koridor~*");
-        }
-
-
-
-        public void Match(IEnumerable<string> elements, string selector)
-        {
-            var token = (Selector2.Create(selector)).QuerySelector(doc.Children).Select(w => w.ToString());
-            bool temp = true;
-
-            foreach (var item in Enumerable.Concat(elements, token))
-            {
-                if (!elements.Contains(item) || !token.Contains(item))
+                Attributes = new List<NewSuperModifyedSelector.Attribute>()
                 {
-                    temp = false;
-                    break;
+                    new NewSuperModifyedSelector.Attribute()
+                    {
+                        Name = "text",
+                        Value = "hello"
+                    }
                 }
+            };
+            IsMatch(template, "Name = TheName, Id = idshnick|Name = TheName, Id = idshnick|Name = , Id = |Name = , Id = idshnick|");
+        }
+
+
+
+
+
+        private void IsMatch(TemplateElement template, string token)
+        {
+            var k = Selector.QuerySelector(template, root);
+            string sum = "";
+            foreach (var item in k)
+            {
+                sum += item.ToString()+"|";
             }
-            Assert.IsTrue(temp);
+            Assert.IsTrue(token == sum);
         }
     }
 }

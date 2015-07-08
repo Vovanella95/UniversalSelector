@@ -18,6 +18,10 @@ namespace NewSuperModifyedSelector
         public string Id;
         public IEnumerable<Attribute> Attributes;
         public IEnumerable<Element> Children;
+        public override string ToString()
+        {
+            return "Name = " + Name + ", Id = " + Id;
+        }
     }
 
     public class TemplateElement : Element
@@ -25,6 +29,10 @@ namespace NewSuperModifyedSelector
         private IEnumerable<int[]> Combinations;
         public bool CompareAttributes(IEnumerable<Attribute> neededAttribs, IEnumerable<Attribute> tokenAttribs)
         {
+            if (neededAttribs == null) return true;
+            if (tokenAttribs == null) return false;
+
+
             int dim = neededAttribs.Count();
             if (Combinations == null)
                 Combinations = GenerateAllPermutations(dim);
@@ -114,7 +122,6 @@ namespace NewSuperModifyedSelector
             if (root == null) throw new ArgumentNullException();
             var nodeStack = new Stack<Element>();
             nodeStack.Push(root);
-
             while (nodeStack.Count != 0)
             {
                 var node = nodeStack.Pop();

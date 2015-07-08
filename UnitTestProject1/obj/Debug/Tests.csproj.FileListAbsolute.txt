@@ -1,7 +1,7 @@
 C:\Users\Uladzimir_Paliukhovi\Documents\UniversalSelector\UnitTestProject1\bin\Debug\UnitTestProject1.dll
 C:\Users\Uladzimir_Paliukhovi\Documents\UniversalSelector\UnitTestProject1\bin\Debug\UnitTestProject1.pdb
-C:\Users\Uladzimir_Paliukhovi\Documents\UniversalSelector\UnitTestProject1\bin\Debug\UniParser.dll
-C:\Users\Uladzimir_Paliukhovi\Documents\UniversalSelector\UnitTestProject1\bin\Debug\UniParser.pdb
 C:\Users\Uladzimir_Paliukhovi\Documents\UniversalSelector\UnitTestProject1\obj\Debug\Tests.csprojResolveAssemblyReference.cache
 C:\Users\Uladzimir_Paliukhovi\Documents\UniversalSelector\UnitTestProject1\obj\Debug\UnitTestProject1.dll
 C:\Users\Uladzimir_Paliukhovi\Documents\UniversalSelector\UnitTestProject1\obj\Debug\UnitTestProject1.pdb
+C:\Users\Uladzimir_Paliukhovi\Documents\UniversalSelector\UnitTestProject1\bin\Debug\NewSuperModifyedSelector.dll
+C:\Users\Uladzimir_Paliukhovi\Documents\UniversalSelector\UnitTestProject1\bin\Debug\NewSuperModifyedSelector.pdb

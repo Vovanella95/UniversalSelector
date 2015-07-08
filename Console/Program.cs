@@ -99,20 +99,20 @@ namespace ConsoleApp1
             #endregion
 
             #region Template
-            var template = new TemplateElement()
+            TemplateElement template = new TemplateElement()
             {
-                Name = "TheName",
-                Attributes = list1
+                Attributes = new List<NewSuperModifyedSelector.Attribute>()
+                {
+                    new NewSuperModifyedSelector.Attribute()
+                    {
+                        Name = "text",
+                        Value = "hello"
+                    }
+                }
             };
             #endregion
 
-
-
-            var k = Selector.QuerySelector(template, root);
-
-
-
-
+            var k = Selector.QuerySelector(template, root).ToList();
         }
     }
 }

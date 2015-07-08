@@ -54,10 +54,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\UniParser\UniParser.csproj">
-      <Project>{4e807b78-97fd-4932-a1c1-56fcabb5ae2d}</Project>
-      <Name>UniParser</Name>
+    <ProjectReference Include="..\NewSuperModifyedSelector\NewSuperModifyedSelector.csproj">
+      <Project>{4a6412cb-cbe2-4cbb-9e13-710430310bbc}</Project>
+      <Name>NewSuperModifyedSelector</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
