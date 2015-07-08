@@ -14,3 +14,5 @@ C:\Users\Uladzimir_Paliukhovi\Documents\UniversalSelector\Console\bin\Debug\Cons
 C:\Users\Uladzimir_Paliukhovi\Documents\UniversalSelector\Console\bin\Debug\UniParser.dll
 C:\Users\Uladzimir_Paliukhovi\Documents\UniversalSelector\Console\bin\Debug\UniParser.pdb
 C:\Users\Uladzimir_Paliukhovi\Documents\UniversalSelector\Console\obj\Debug\ConsoleApp1.csprojResolveAssemblyReference.cache
+C:\Users\Uladzimir_Paliukhovi\Documents\UniversalSelector\Console\bin\Debug\NewSuperModifyedSelector.dll
+C:\Users\Uladzimir_Paliukhovi\Documents\UniversalSelector\Console\bin\Debug\NewSuperModifyedSelector.pdb

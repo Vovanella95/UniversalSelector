@@ -1,0 +1,5 @@
+C:\Users\Uladzimir_Paliukhovi\Documents\UniversalSelector\NewSuperModifyedSelector\bin\Debug\NewSuperModifyedSelector.dll
+C:\Users\Uladzimir_Paliukhovi\Documents\UniversalSelector\NewSuperModifyedSelector\bin\Debug\NewSuperModifyedSelector.pdb
+C:\Users\Uladzimir_Paliukhovi\Documents\UniversalSelector\NewSuperModifyedSelector\obj\Debug\NewSuperModifyedSelector.dll
+C:\Users\Uladzimir_Paliukhovi\Documents\UniversalSelector\NewSuperModifyedSelector\obj\Debug\NewSuperModifyedSelector.pdb
+C:\Users\Uladzimir_Paliukhovi\Documents\UniversalSelector\NewSuperModifyedSelector\obj\Debug\NewSuperModifyedSelector.csprojResolveAssemblyReference.cache

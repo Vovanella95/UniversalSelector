@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using UniParser;
+using NewSuperModifyedSelector;
+using System.Diagnostics;
 
 namespace ConsoleApp1
 {
@@ -11,103 +12,73 @@ namespace ConsoleApp1
     {
         static void Main(string[] args)
         {
-            #region Document
-            var doc = new Document()
+
+            var list1 = new List<NewSuperModifyedSelector.Attribute>()
             {
-                Children = new List<Element>()
+                new NewSuperModifyedSelector.Attribute()
                 {
-                    new Element()
-                    {
-                        Name = "House",
-                        Children = new List<Element>()
-                        {
-                            new Element()
-                            {
-                                Name = "Koridor"
-                            },
-                            new Element()
-                            {
-                                Name = "Citchen",
-                                Children = new List<Element>()
-                                {
-                                    new Element()
-                                    {
-                                        Name="Table"
-                                    },
-                                    new Element()
-                                    {
-                                        Name="Chear"
-                                    },
-                                    new Element()
-                                    {
-                                        Name="Gas"
-                                    },
-                                    new Element()
-                                    {
-                                        Name = "Citchen",
-                                        Children = new List<Element>()
-                                        {
-                                            new Element()
-                                            {
-                                                Name = "Lol",
-                                                Id = "id1"
-                                            },
-                                            new Element()
-                                            {
-                                                Name = "Lol",
-                                                Id = "id2"
-                                            },
-                                            new Element()
-                                            {
-                                                Name = "foof",
-                                                Id = "id"
-                                            },
-                                            new Element()
-                                            {
-                                                Name = "Citchen",
-                                                Id = "id1"
-                                            }
-                                        }
-                                    }
-                                }
-                            },
-                            new Element()
-                            {
-                                Name = "Bigroom",
-                                Classes = new List<string> {"big","nice"},
-                                Children = new List<Element>()
-                                {
-                                    new Element()
-                                    {
-                                        Name = "TVSet",
-                                        Attributes = new List<UniParser.Attribute>()
-                                        {
-                                            new UniParser.Attribute()
-                                            {
-                                                Name = "ChannelCount",
-                                                Value = "12"
-                                            },
-                                            new UniParser.Attribute()
-                                            {
-                                                Name = "ScreenResolution",
-                                                Value = "1920x1080"
-                                            },
-                                            new UniParser.Attribute()
-                                            {
-                                                Name = "Size",
-                                                Value = "180x100"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    Name = "href",
+                    Value = "nothing"
+                },
+                new NewSuperModifyedSelector.Attribute()
+                {
+                    Name = "type",
+                    Value = "tag"
+                },
+                new NewSuperModifyedSelector.Attribute()
+                {
+                    Name = "text",
+                    Value = "hello"
                 }
             };
-            #endregion
-            var sel = Selector2.Create("House *");
-            var k = sel.QuerySelector(doc.Children).ToList();
+
+            var list2 = new List<NewSuperModifyedSelector.Attribute>()
+            {
+                new NewSuperModifyedSelector.Attribute()
+                {
+                    Name = "ne4w",
+                    Value = "nerws"
+                },
+                new NewSuperModifyedSelector.Attribute()
+                {
+                    Name = "santa",
+                    Value = "claus"
+                },
+                new NewSuperModifyedSelector.Attribute()
+                {
+                    Name = "href",
+                    Value = "nothing"
+                },
+                new NewSuperModifyedSelector.Attribute()
+                {
+                    Name = "new",
+                    Value = "news"
+                },
+                new NewSuperModifyedSelector.Attribute()
+                {
+                    Name = "type",
+                    Value = "tag"
+                },
+                new NewSuperModifyedSelector.Attribute()
+                {
+                    Name = "text",
+                    Value = "hello"
+                }
+            };
+
+
+
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            bool a;
+            var el = new Element();
+            for (int i = 0; i < 1000000; i++)
+            {
+                a = el.CompareAttributes(list1, list2);
+            }
+            sw.Stop();
+            Console.WriteLine(sw.ElapsedTicks);
+            Console.ReadLine();
         }
     }
 }
