@@ -10,6 +10,28 @@ namespace ConsoleApp1
 {
     class Program
     {
+
+        private static IEnumerable<int> AddToEnumerable(IEnumerable<int> collection, int value)
+        {
+            int prev = 0;
+            bool checker = false;
+            foreach (var item in collection)
+            {
+                if (prev < value && item > value)
+                {
+                    yield return value;
+                    checker = true;
+                }
+                yield return item;
+                prev = item;
+            }
+            if (!checker)
+            {
+                yield return value;
+            }
+        }
+
+
         static void Main(string[] args)
         {
             #region Attributes
@@ -105,6 +127,16 @@ namespace ConsoleApp1
                 {
                     new NewSuperModifyedSelector.Attribute()
                     {
+                        Name = "href",
+                        Value = "nothing"
+                    },
+                    new NewSuperModifyedSelector.Attribute()
+                    {
+                        Name = "type",
+                        Value = "tag"
+                    },
+                    new NewSuperModifyedSelector.Attribute()
+                    {
                         Name = "text",
                         Value = "hello"
                     }
@@ -112,7 +144,12 @@ namespace ConsoleApp1
             };
             #endregion
 
+
+
             var k = Selector.QuerySelector(template, root).ToList();
+
+
+
         }
     }
 }
