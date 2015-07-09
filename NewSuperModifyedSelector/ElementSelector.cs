@@ -27,29 +27,37 @@ namespace NewSuperModifyedSelector
     public class TemplateElement : Element
     {
         private IEnumerable<int[]> Combinations;
+        private int dim;
+        private Dictionary<string, int> dictionary;
+        private int count;
+
         public bool CompareAttributes(IEnumerable<Attribute> neededAttribs, IEnumerable<Attribute> tokenAttribs)
         {
             if (neededAttribs == null) return true;
             if (tokenAttribs == null) return false;
 
-
-            int dim = neededAttribs.Count();
             if (Combinations == null)
+            {
+                dim = neededAttribs.Count();
                 Combinations = GenerateAllPermutations(dim);
-            var dictionary = neededAttribs
-                .Select((w, ii) => new Tuple<string, int>(w.Name, ii))
-                .ToDictionary(w => w.Item1, w => w.Item2 + 1);
+                count = Combinations.Count();
+
+                dictionary = neededAttribs
+                    .Select((w, ii) => new Tuple<string, int>(w.Name, ii))
+                    .ToDictionary(w => w.Item1, w => w.Item2 + 1);
+            }
 
             int currentState = 0;
-            var currentValues = new List<int>();
-            int count = Combinations.Count();
+            var currentValues = new Stack<int>();
+
+            int index;
             foreach (var item in tokenAttribs)
             {
                 if (!dictionary.Keys.Contains(item.Name)) continue;
-                int index = dictionary[item.Name];
+                index = dictionary[item.Name];
                 if (!currentValues.Contains(index))
                 {
-                    currentValues.Add(index);
+                    currentValues.Push(index);
                 }
                 currentState = GetStateNumber(dim, currentValues);
                 if (currentState == count) return true;
@@ -74,7 +82,6 @@ namespace NewSuperModifyedSelector
                             yield return source.Skip(i).Take(ctr).OrderBy(x => x).ToArray();
                             Swap(source, j, k);
                         }
-
                     yield return source.Skip(i).Take(ctr).ToArray();
                 }
             }
@@ -88,10 +95,6 @@ namespace NewSuperModifyedSelector
         }
         private int GetStateNumber(int dim, IEnumerable<int> values)
         {
-            if (Combinations == null)
-            {
-                Combinations = GenerateAllPermutations(dim);
-            }
             int i = 1;
             foreach (var item in Combinations)
             {
