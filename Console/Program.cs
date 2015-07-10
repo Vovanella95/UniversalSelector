@@ -10,7 +10,6 @@ namespace ConsoleApp1
 {
     class Program
     {
-
         private static IEnumerable<int> AddToEnumerable(IEnumerable<int> collection, int value)
         {
             int prev = 0;
@@ -144,12 +143,9 @@ namespace ConsoleApp1
             };
             #endregion
 
-
+            var kh = AddToEnumerable(new int[] { 2, 3, 4, 5 }, 1);
 
             var k = Selector.QuerySelector(template, root).ToList();
-
-
-
         }
     }
 }

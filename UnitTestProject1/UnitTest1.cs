@@ -104,7 +104,10 @@ namespace UnitTestProject1
                 Name = "TheName",
                 Attributes = list1
             };
-            IsMatch(template, "Name = TheName, Id = idshnick|Name = TheName, Id = idshnick|");
+            for (int i = 0; i < 10000; i++)
+            {
+                IsMatch(template, "Name = TheName, Id = idshnick|Name = TheName, Id = idshnick|");
+            }
         }
 
         [TestMethod]
@@ -121,7 +124,12 @@ namespace UnitTestProject1
                     }
                 }
             };
-            IsMatch(template, "Name = TheName, Id = idshnick|Name = TheName, Id = idshnick|Name = , Id = |Name = , Id = idshnick|");
+
+            for (int i = 0; i < 10000; i++)
+            {
+                IsMatch(template, "Name = TheName, Id = idshnick|Name = TheName, Id = idshnick|Name = , Id = |Name = , Id = idshnick|");
+            }
+            
         }
 
 
