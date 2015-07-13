@@ -104,10 +104,7 @@ namespace UnitTestProject1
                 Name = "TheName",
                 Attributes = list1
             };
-            for (int i = 0; i < 10000; i++)
-            {
-                IsMatch(template, "Name = TheName, Id = idshnick|Name = TheName, Id = idshnick|");
-            }
+            IsMatch(template, "Name = TheName, Id = idshnick|Name = TheName, Id = idshnick|");
         }
 
         [TestMethod]
@@ -124,17 +121,216 @@ namespace UnitTestProject1
                     }
                 }
             };
-
-            for (int i = 0; i < 10000; i++)
-            {
-                IsMatch(template, "Name = TheName, Id = idshnick|Name = TheName, Id = idshnick|Name = , Id = |Name = , Id = idshnick|");
-            }
-            
+            IsMatch(template, "Name = TheName, Id = idshnick|Name = TheName, Id = idshnick|Name = , Id = |Name = , Id = idshnick|");
         }
 
+        [TestMethod]
+        public void QuerySelectorSelectUnfullAttributes12to2()
+        {
+            var template = new TemplateElement()
+            {
+                Attributes = new List<NewSuperModifyedSelector.Attribute>()
+                {
+                    new NewSuperModifyedSelector.Attribute()
+                    {
+                        Name = "text",
+                        Value = "hello"
+                    },
+                    new NewSuperModifyedSelector.Attribute()
+                    {
+                        Name = "attr2",
+                        Value = "value2"
+                    }
+                }
+            };
 
+            var element = new Element()
+            {
+                Attributes = new List<NewSuperModifyedSelector.Attribute>()
+                {
+                    new NewSuperModifyedSelector.Attribute()
+                    {
+                        Name = "text",
+                        Value = "hello"
+                    },
+                    new NewSuperModifyedSelector.Attribute()
+                    {
+                        Name = "attr2",
+                        Value = "value2"
+                    }
+                }
+            };
 
+            Assert.IsTrue(template.IsMatch(element));
+        }
 
+        [TestMethod]
+        public void QuerySelectorSelectUnfullAttributes2to2()
+        {
+            var template = new TemplateElement()
+            {
+                Attributes = new List<NewSuperModifyedSelector.Attribute>()
+                {
+                    new NewSuperModifyedSelector.Attribute()
+                    {
+                        Name = "text",
+                        Value = "hello"
+                    }
+                }
+            };
+
+            var element = new Element()
+            {
+                Attributes = new List<NewSuperModifyedSelector.Attribute>()
+                {
+                    new NewSuperModifyedSelector.Attribute()
+                    {
+                        Name = "text",
+                        Value = "hello"
+                    },
+                    new NewSuperModifyedSelector.Attribute()
+                    {
+                        Name = "attr2",
+                        Value = "value2"
+                    }
+                }
+            };
+
+            Assert.IsTrue(template.IsMatch(element));
+        }
+
+        [TestMethod]
+        public void QuerySelectorSelectUnfullAttributes1to2()
+        {
+            var template = new TemplateElement()
+            {
+                Attributes = new List<NewSuperModifyedSelector.Attribute>()
+                {
+                    new NewSuperModifyedSelector.Attribute()
+                    {
+                        Name = "attr2",
+                        Value = "value2"
+                    }
+                }
+            };
+
+            var element = new Element()
+            {
+                Attributes = new List<NewSuperModifyedSelector.Attribute>()
+                {
+                    new NewSuperModifyedSelector.Attribute()
+                    {
+                        Name = "text",
+                        Value = "hello"
+                    },
+                    new NewSuperModifyedSelector.Attribute()
+                    {
+                        Name = "attr2",
+                        Value = "value2"
+                    }
+                }
+            };
+
+            Assert.IsTrue(template.IsMatch(element));
+        }
+
+        [TestMethod]
+        public void QuerySelectorSelectEmptyAttributes0to2()
+        {
+            var template = new TemplateElement()
+            {
+
+            };
+
+            var element = new Element()
+            {
+                Attributes = new List<NewSuperModifyedSelector.Attribute>()
+                {
+                    new NewSuperModifyedSelector.Attribute()
+                    {
+                        Name = "text",
+                        Value = "hello"
+                    },
+                    new NewSuperModifyedSelector.Attribute()
+                    {
+                        Name = "attr2",
+                        Value = "value2"
+                    }
+                }
+            };
+
+            Assert.IsTrue(template.IsMatch(element));
+        }
+
+        [TestMethod]
+        public void QuerySelectorSelectManyAttributes0toMany()
+        {
+            var template = new TemplateElement()
+            {
+                
+            };
+
+            var element = new Element()
+            {
+                Attributes = new List<NewSuperModifyedSelector.Attribute>()
+                {
+                 new NewSuperModifyedSelector.Attribute()
+                    {
+                        Name = "attr1",
+                        Value = "val1"
+                    },
+                    new NewSuperModifyedSelector.Attribute()
+                    {
+                        Name = "attr2",
+                        Value = "val2"
+                    },
+                    new NewSuperModifyedSelector.Attribute()
+                    {
+                        Name = "attr3",
+                        Value = "val3"
+                    },
+                    new NewSuperModifyedSelector.Attribute()
+                    {
+                        Name = "attr4",
+                        Value = "val4"
+                    },
+                    new NewSuperModifyedSelector.Attribute()
+                    {
+                        Name = "attr5",
+                        Value = "val5"
+                    },
+                    new NewSuperModifyedSelector.Attribute()
+                    {
+                        Name = "attr6",
+                        Value = "val6"
+                    },
+                    new NewSuperModifyedSelector.Attribute()
+                    {
+                        Name = "attr7",
+                        Value = "val7"
+                    },
+                    new NewSuperModifyedSelector.Attribute()
+                    {
+                        Name = "attr8",
+                        Value = "val8"
+                    },
+                        new NewSuperModifyedSelector.Attribute()
+
+                    {
+                        Name = "attr9",
+                        Value = "val9"
+                    },
+                        new NewSuperModifyedSelector.Attribute()
+                    {
+                        Name = "attr10",
+                        Value = "val10"
+                    }
+                
+                }
+            };
+
+            Assert.IsTrue(template.IsMatch(element));
+        }
 
         private void IsMatch(TemplateElement template, string token)
         {
@@ -142,7 +338,7 @@ namespace UnitTestProject1
             string sum = "";
             foreach (var item in k)
             {
-                sum += item.ToString()+"|";
+                sum += item.ToString() + "|";
             }
             Assert.IsTrue(token == sum);
         }

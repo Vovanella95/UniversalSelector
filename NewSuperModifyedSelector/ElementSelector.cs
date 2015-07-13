@@ -44,7 +44,7 @@ namespace NewSuperModifyedSelector
 
             var currentValues = "";
             int index;
-            var testedValues = string.Join(" ",dictionary.Select(w => w.Value))+' ';
+            var testedValues = string.Join(" ", dictionary.Select(w => w.Value)) + ' ';
             foreach (var item in tokenAttribs)
             {
                 if (!dictionary.Keys.Contains(item.Name)) continue;
@@ -52,20 +52,6 @@ namespace NewSuperModifyedSelector
                 currentValues = AddValueToString(currentValues, index);
                 if (currentValues == testedValues) return true;
             }
-
-
-
-
-
-            /*
-            foreach (var item in tokenAttribs)
-            {
-                if (!dictionary.Keys.Contains(item.Name)) continue;
-                index = dictionary[item.Name];
-                currentValues = AddValueToString(currentValues, index);
-                currentState = dictionary2[currentValues];
-                if (currentState == count) return true;
-            }*/
             return false;
         }
         private static string TransformToString(IEnumerable<int> array)
@@ -80,9 +66,9 @@ namespace NewSuperModifyedSelector
         private static string AddValueToString(string str, int value)
         {
             return TransformToString(AddToEnumerable(str.Split(' ').
-                 Where(w=>!string.IsNullOrEmpty(w))
+                 Where(w => !string.IsNullOrEmpty(w))
                 .Distinct()
-                .Select(w=>Convert.ToInt32(w)), value));
+                .Select(w => Convert.ToInt32(w)), value));
         }
         private static IEnumerable<int> AddToEnumerable(IEnumerable<int> collection, int value)
         {
@@ -90,7 +76,7 @@ namespace NewSuperModifyedSelector
             bool checker = false;
             foreach (var item in collection)
             {
-                if(prev<value && item > value)
+                if (prev < value && item > value)
                 {
                     yield return value;
                     checker = true;
@@ -98,7 +84,7 @@ namespace NewSuperModifyedSelector
                 yield return item;
                 prev = item;
             }
-            if(!checker)
+            if (!checker)
             {
                 yield return value;
             }
@@ -146,4 +132,8 @@ namespace NewSuperModifyedSelector
             }
         }
     }
+
+
+    
+
 }

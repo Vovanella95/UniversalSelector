@@ -146,6 +146,10 @@ namespace ConsoleApp1
             var kh = AddToEnumerable(new int[] { 2, 3, 4, 5 }, 1);
 
             var k = Selector.QuerySelector(template, root).ToList();
+
+
+            
+
         }
     }
 }
