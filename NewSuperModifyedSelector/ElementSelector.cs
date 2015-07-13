@@ -28,40 +28,30 @@ namespace NewSuperModifyedSelector
     {
         private int dim;
         private Dictionary<string, int> dictionary;
-
-        public bool CompareAttributes(IEnumerable<Attribute> neededAttribs, IEnumerable<Attribute> tokenAttribs)
+        public bool CompareAttributes(IEnumerable<Attribute> tokenAttribs)
         {
-            if (neededAttribs == null) return true;
+            if (Attributes == null) return true;
             if (tokenAttribs == null) return false;
 
             if (dictionary == null)
             {
-                dim = neededAttribs.Count();
-                dictionary = neededAttribs
+                dim = Attributes.Count();
+                dictionary = Attributes
                     .Select((w, ii) => new Tuple<string, int>(w.Name, ii))
                     .ToDictionary(w => w.Item1, w => w.Item2 + 1);
             }
-
-            var currentValues = "";
-            int index;
+            var currentValues = String.Empty;
             var testedValues = string.Join(" ", dictionary.Select(w => w.Value)) + ' ';
-            foreach (var item in tokenAttribs)
+            foreach (var item in tokenAttribs.Where(w=>dictionary.Keys.Contains(w.Name)))
             {
-                if (!dictionary.Keys.Contains(item.Name)) continue;
-                index = dictionary[item.Name];
-                currentValues = AddValueToString(currentValues, index);
+                currentValues = AddValueToString(currentValues, dictionary[item.Name]);
                 if (currentValues == testedValues) return true;
             }
             return false;
         }
         private static string TransformToString(IEnumerable<int> array)
         {
-            string val = "";
-            foreach (var item in array)
-            {
-                val += item + " ";
-            }
-            return val;
+            return string.Join(" ", array.Select(w => w.ToString())) + ' ';
         }
         private static string AddValueToString(string str, int value)
         {
@@ -70,29 +60,13 @@ namespace NewSuperModifyedSelector
                 .Distinct()
                 .Select(w => Convert.ToInt32(w)), value));
         }
-        private static IEnumerable<int> AddToEnumerable(IEnumerable<int> collection, int value)
+        private static IEnumerable<int> AddToEnumerable(IEnumerable<int> collection, params int[] values)
         {
-            int prev = 0;
-            bool checker = false;
-            foreach (var item in collection)
-            {
-                if (prev < value && item > value)
-                {
-                    yield return value;
-                    checker = true;
-                }
-                yield return item;
-                prev = item;
-            }
-            if (!checker)
-            {
-                yield return value;
-            }
+            return Enumerable.Concat(collection, values).OrderBy(w => w);
         }
-        private static void Swap<T>(T[] array, int first, int second)
+        private static void Swap(int[] array, int first, int second)
         {
-            T tmp;
-            tmp = array[first];
+            int tmp = array[first];
             array[first] = array[second];
             array[second] = tmp;
         }
@@ -102,7 +76,7 @@ namespace NewSuperModifyedSelector
             if (!string.IsNullOrEmpty(Id) && Id != element.Id) return false;
             if (Attributes != null)
             {
-                return CompareAttributes(Attributes, element.Attributes);
+                return CompareAttributes(element.Attributes);
             }
             return true;
         }
@@ -132,8 +106,4 @@ namespace NewSuperModifyedSelector
             }
         }
     }
-
-
-    
-
 }

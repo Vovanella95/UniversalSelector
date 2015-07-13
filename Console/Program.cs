@@ -147,9 +147,6 @@ namespace ConsoleApp1
 
             var k = Selector.QuerySelector(template, root).ToList();
 
-
-            
-
         }
     }
 }
