@@ -26,7 +26,6 @@ namespace NewSuperModifyedSelector
 
     public class TemplateElement : Element
     {
-        private int dim;
         private Dictionary<string, int> dictionary;
         public bool CompareAttributes(IEnumerable<Attribute> tokenAttribs)
         {
@@ -35,33 +34,17 @@ namespace NewSuperModifyedSelector
 
             if (dictionary == null)
             {
-                dim = Attributes.Count();
                 dictionary = Attributes
                     .Select((w, ii) => new Tuple<string, int>(w.Name, ii))
                     .ToDictionary(w => w.Item1, w => w.Item2 + 1);
             }
 
-            var currentValues = String.Empty;
-            var testedValues = string.Join(" ", dictionary.Select(w => w.Value)) + ' ';
-            foreach (var item in tokenAttribs.Where(w=>dictionary.Keys.Contains(w.Name)))
+            foreach (var item in tokenAttribs.Where(w => dictionary.Keys.Contains(w.Name)))
             {
                 dictionary.Remove(item.Name);
-                //currentValues = AddValueToString(currentValues, dictionary[item.Name]);
-                //if (currentValues == testedValues) return true;
             }
             return dictionary.Count == 0;
-            //return false;
         }
-        /*private static string TransformToString(IEnumerable<int> array)
-        {
-            return string.Join(" ", array.Select(w => w.ToString())) + ' ';
-        }
-        private static string AddValueToString(string str, int value)
-        {
-            return TransformToString(AddToEnumerable(str.Split(' ').
-                 Where(w => !string.IsNullOrEmpty(w))
-                .Select(w => Convert.ToInt32(w)), value));
-        }*/
         private static IEnumerable<int> AddToEnumerable(IEnumerable<int> collection, params int[] values)
         {
             return Enumerable.Concat(collection, values).OrderBy(w => w);
