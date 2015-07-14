@@ -81,7 +81,24 @@ namespace ConsoleApp1
                     {
                         Id = "idshnick",
                         Name = "TheName",
-                        Attributes = list2
+                        Attributes = new List<NewSuperModifyedSelector.Attribute>()
+                        {
+                            new NewSuperModifyedSelector.Attribute()
+                            {
+                                Name = "href",
+                                Value = "nothing"
+                            },
+                            new NewSuperModifyedSelector.Attribute()
+                            {
+                                Name = "type",
+                                Value = "tag"
+                            },
+                            new NewSuperModifyedSelector.Attribute()
+                            {
+                                Name = "text",
+                                Value = "I Am Vasya"
+                            }
+                        }
                     },
                     new Element()
                     {
@@ -94,35 +111,10 @@ namespace ConsoleApp1
                         Attributes = list1
                     }
                 }
-
             };
             #endregion
 
-            #region Template
-            TemplateElement template = new TemplateElement()
-            {
-                Attributes = new List<NewSuperModifyedSelector.Attribute>()
-                {
-                    new NewSuperModifyedSelector.Attribute()
-                    {
-                        Name = "href",
-                        Value = "nothing"
-                    },
-                    new NewSuperModifyedSelector.Attribute()
-                    {
-                        Name = "type",
-                        Value = "tag"
-                    },
-                    new NewSuperModifyedSelector.Attribute()
-                    {
-                        Name = "text",
-                        Value = "hello"
-                    }
-                }
-            };
-            #endregion
-            var k = Selector.QuerySelector(template, root).ToList();
-
+            var k = (new Selector(root)).QuerySelector("#idshnick[href=nothing][type=tag][text=$result]", w => Console.WriteLine(w)).ToList();
         }
     }
 }

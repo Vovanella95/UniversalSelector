@@ -95,7 +95,7 @@ namespace UnitTestProject1
 
         };
         #endregion
-
+        /*
         [TestMethod]
         public void QuerySelectorMustDoSimpleSelects()
         {
@@ -382,5 +382,6 @@ namespace UnitTestProject1
             }
             Assert.IsTrue(token == sum);
         }
+        */
     }
 }
