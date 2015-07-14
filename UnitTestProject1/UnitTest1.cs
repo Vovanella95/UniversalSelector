@@ -173,6 +173,11 @@ namespace UnitTestProject1
                 {
                     new NewSuperModifyedSelector.Attribute()
                     {
+                        Name = "attr2",
+                        Value = "value2"
+                    },
+                    new NewSuperModifyedSelector.Attribute()
+                    {
                         Name = "text",
                         Value = "hello"
                     }
@@ -330,6 +335,41 @@ namespace UnitTestProject1
             };
 
             Assert.IsTrue(template.IsMatch(element));
+        }
+
+        [TestMethod]
+        public void QuerySelectorMustReturnFalseIfConditionIsWrong()
+        {
+            var template = new TemplateElement()
+            {
+                Attributes = new List<NewSuperModifyedSelector.Attribute>()
+                {
+                    new NewSuperModifyedSelector.Attribute()
+                    {
+                        Name = "attr2",
+                        Value = "value2"
+                    },
+                    new NewSuperModifyedSelector.Attribute()
+                    {
+                        Name = "text",
+                        Value = "hello"
+                    }
+                }
+            };
+
+            var element = new Element()
+            {
+                Attributes = new List<NewSuperModifyedSelector.Attribute>()
+                {
+                    new NewSuperModifyedSelector.Attribute()
+                    {
+                        Name = "text",
+                        Value = "hello"
+                    }
+                }
+            };
+
+            Assert.IsFalse(template.IsMatch(element));
         }
 
         private void IsMatch(TemplateElement template, string token)

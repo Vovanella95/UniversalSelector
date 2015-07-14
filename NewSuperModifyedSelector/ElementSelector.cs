@@ -40,16 +40,19 @@ namespace NewSuperModifyedSelector
                     .Select((w, ii) => new Tuple<string, int>(w.Name, ii))
                     .ToDictionary(w => w.Item1, w => w.Item2 + 1);
             }
+
             var currentValues = String.Empty;
             var testedValues = string.Join(" ", dictionary.Select(w => w.Value)) + ' ';
             foreach (var item in tokenAttribs.Where(w=>dictionary.Keys.Contains(w.Name)))
             {
-                currentValues = AddValueToString(currentValues, dictionary[item.Name]);
-                if (currentValues == testedValues) return true;
+                dictionary.Remove(item.Name);
+                //currentValues = AddValueToString(currentValues, dictionary[item.Name]);
+                //if (currentValues == testedValues) return true;
             }
-            return false;
+            return dictionary.Count == 0;
+            //return false;
         }
-        private static string TransformToString(IEnumerable<int> array)
+        /*private static string TransformToString(IEnumerable<int> array)
         {
             return string.Join(" ", array.Select(w => w.ToString())) + ' ';
         }
@@ -57,9 +60,8 @@ namespace NewSuperModifyedSelector
         {
             return TransformToString(AddToEnumerable(str.Split(' ').
                  Where(w => !string.IsNullOrEmpty(w))
-                .Distinct()
                 .Select(w => Convert.ToInt32(w)), value));
-        }
+        }*/
         private static IEnumerable<int> AddToEnumerable(IEnumerable<int> collection, params int[] values)
         {
             return Enumerable.Concat(collection, values).OrderBy(w => w);

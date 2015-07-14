@@ -10,27 +10,6 @@ namespace ConsoleApp1
 {
     class Program
     {
-        private static IEnumerable<int> AddToEnumerable(IEnumerable<int> collection, int value)
-        {
-            int prev = 0;
-            bool checker = false;
-            foreach (var item in collection)
-            {
-                if (prev < value && item > value)
-                {
-                    yield return value;
-                    checker = true;
-                }
-                yield return item;
-                prev = item;
-            }
-            if (!checker)
-            {
-                yield return value;
-            }
-        }
-
-
         static void Main(string[] args)
         {
             #region Attributes
@@ -142,9 +121,6 @@ namespace ConsoleApp1
                 }
             };
             #endregion
-
-            var kh = AddToEnumerable(new int[] { 2, 3, 4, 5 }, 1);
-
             var k = Selector.QuerySelector(template, root).ToList();
 
         }
