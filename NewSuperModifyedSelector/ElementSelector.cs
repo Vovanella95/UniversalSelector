@@ -189,6 +189,7 @@ namespace NewSuperModifyedSelector
                     }
                 }
 
+                bool wasReturned = false;
                 foreach (var template in templates)
                 {
                     var isMatch = template.Item1.IsMatch(node);
@@ -198,7 +199,11 @@ namespace NewSuperModifyedSelector
                         {
                             template.Item2(isMatch);
                         }
-                        yield return node;
+                        if (!wasReturned)
+                        {
+                            wasReturned = true;
+                            yield return node;
+                        }
                     }
                 }
 
