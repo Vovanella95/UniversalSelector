@@ -27,11 +27,24 @@ namespace NewSuperModifyedSelector
 
     public class TemplateElement : Element
     {
+        #region Fields
         private int dim;
         private Dictionary<string, int> dictionary;
+        #endregion
+
+        #region PublicMethods
+        public TemplateElement() { }
+        public TemplateElement(string representation)
+        {
+            Regex comparer = new Regex(@"(?'id'[#])|(?'attribs'\W\w+\W?\W\w+\W)|(?'tag'[.#=]*)");
+            var selects = SplitProperties(representation);
+            Attributes = selects.Where(w => comparer.Match(w).Groups["attribs"].Success).Select(w => ParseAttributes(w));
+            Id = selects.Where(w => comparer.Match(w).Groups["id"].Success).Count() != 0 ?
+                            selects.First(w => comparer.Match(w).Groups["id"].Success).Replace("#", "") : null;
+            Name = selects.Where(w => comparer.Match(w).Groups["tag"].Success).Count() != 0 ? selects.First(w => comparer.Match(w).Groups["tag"].Success) : null;
+        }
         public string CompareAttributes(IEnumerable<Attribute> tokenAttribs)
         {
-            if (Attributes == null) return null;
             if (tokenAttribs == null) return null;
             if (dictionary == null)
             {
@@ -66,50 +79,41 @@ namespace NewSuperModifyedSelector
             }
             return INeedThis;
         }
-        private static string TransformToString(IEnumerable<int> array)
+        public string IsMatch(Element element)
+        {
+            if (!string.IsNullOrEmpty(Name) && Name != element.Name) return null;
+            if (!string.IsNullOrEmpty(Id) && Id != element.Id) return null;
+            if (Attributes != null && Attributes.Count() != 0)
+            {
+                return CompareAttributes(element.Attributes);
+            }
+            return "$none";
+        }
+        #endregion
+
+        #region PrivateMethods
+        private string TransformToString(IEnumerable<int> array)
         {
             return string.Join(" ", array.Select(w => w.ToString())) + ' ';
         }
-        private static string AddValueToString(string str, int value)
+        private string AddValueToString(string str, int value)
         {
             return TransformToString(AddToEnumerable(str.Split(' ').
                  Where(w => !string.IsNullOrEmpty(w))
                 .Distinct()
                 .Select(w => Convert.ToInt32(w)), value));
         }
-        private static IEnumerable<int> AddToEnumerable(IEnumerable<int> collection, params int[] values)
+        private IEnumerable<int> AddToEnumerable(IEnumerable<int> collection, params int[] values)
         {
             return Enumerable.Concat(collection, values).OrderBy(w => w);
         }
-        private static void Swap(int[] array, int first, int second)
+        private void Swap(int[] array, int first, int second)
         {
             int tmp = array[first];
             array[first] = array[second];
             array[second] = tmp;
         }
-        public string IsMatch(Element element)
-        {
-            if (!string.IsNullOrEmpty(Name) && Name != element.Name) return null;
-            if (!string.IsNullOrEmpty(Id) && Id != element.Id) return null;
-            if (Attributes != null && Attributes.Count()!=0)
-            {
-                return CompareAttributes(element.Attributes);
-            }
-            return "$none";
-        }
-
-        public TemplateElement() { }
-        public TemplateElement(string representation)
-        {
-            Regex comparer = new Regex(@"(?'id'[#])|(?'attribs'\W\w+\W?\W\w+\W)|(?'tag'[.#=]*)");
-            var selects = SplitProperties(representation);
-            Attributes = selects.Where(w => comparer.Match(w).Groups["attribs"].Success).Select(w => ParseAttributes(w));
-            Id = selects.Where(w => comparer.Match(w).Groups["id"].Success).Count() != 0 ?
-                            selects.First(w => comparer.Match(w).Groups["id"].Success).Replace("#", "") : null;
-            Name = selects.Where(w => comparer.Match(w).Groups["tag"].Success).Count() != 0 ? selects.First(w => comparer.Match(w).Groups["tag"].Success) : null;
-        }
-
-        Attribute ParseAttributes(string attribs)
+        private Attribute ParseAttributes(string attribs)
         {
             string val1 = attribs.Substring(1, attribs.IndexOf('=') - 1);
             string val2 = attribs.Substring(attribs.IndexOf('=') + 1, attribs.Length - attribs.IndexOf('=') - 2);
@@ -119,7 +123,7 @@ namespace NewSuperModifyedSelector
                 Value = val2
             };
         }
-        static IEnumerable<string> SplitProperties(string selector)
+        private IEnumerable<string> SplitProperties(string selector)
         {
             var delimeners = new char[] { '#', '.', '[' };
             int i1 = 0;
@@ -133,6 +137,7 @@ namespace NewSuperModifyedSelector
                 }
             }
         }
+        #endregion
     }
 
     public class Selector
@@ -169,12 +174,9 @@ namespace NewSuperModifyedSelector
                 }
             }
         }
-
         public IEnumerable<Element> QuerySelector(IEnumerable<Tuple<string, Action<string>>> selectors)
         {
             var templates = selectors.Select(w => new Tuple<TemplateElement, Action<string>>(new TemplateElement(w.Item1), w.Item2)).ToList();
-
-
             if (Root == null) throw new ArgumentNullException();
             var nodeStack = new Stack<Element>();
             nodeStack.Push(Root);
@@ -188,7 +190,6 @@ namespace NewSuperModifyedSelector
                         nodeStack.Push(subNode);
                     }
                 }
-
                 bool wasReturned = false;
                 foreach (var template in templates)
                 {
@@ -206,8 +207,6 @@ namespace NewSuperModifyedSelector
                         }
                     }
                 }
-
-
             }
         }
     }

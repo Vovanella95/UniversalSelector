@@ -69,18 +69,26 @@ namespace ConsoleApp1
             #region Elements
             var root = new Element()
             {
+                Name = "John_Wick",
+                Id = "Killing_Strangers",
                 Children = new List<Element>()
                 {
                     new Element()
                     {
                         Id = "idshnick",
-                        Name = "TheName",
+                        Name = "Arno_Dorian",
+                        Attributes = list1
+                    },
+                    new Element()
+                    {
+                        Id = "Crown",
+                        Name = "John_Snow",
                         Attributes = list1
                     },
                     new Element()
                     {
                         Id = "idshnick",
-                        Name = "TheName",
+                        Name = "Jacob_Fry",
                         Attributes = new List<NewSuperModifyedSelector.Attribute>()
                         {
                             new NewSuperModifyedSelector.Attribute()
@@ -103,6 +111,7 @@ namespace ConsoleApp1
                     new Element()
                     {
                         Name="Vova",
+                        Id = "Zdarova",
                         Children = new List<Element>(),
                         Attributes = new List<NewSuperModifyedSelector.Attribute>()
                         {
@@ -136,12 +145,12 @@ namespace ConsoleApp1
 
             var k = new List<Tuple<string, Action<string>>>()
             {
-                new Tuple<string,Action<string>>("#idshnick[href=nothing][type=$result]",w => Console.WriteLine(w+" - Selector1")),
-                new Tuple<string,Action<string>>("Vova[Mass=$result]",w => Console.WriteLine(w+" - Selector2")),
-                new Tuple<string,Action<string>>("#Kotember[Height=$result]",w => Console.WriteLine(w+" - Selector3")),
-                new Tuple<string,Action<string>>("#idshnick[href=$result]",w => Console.WriteLine(w+" - Selector4")),
+                new Tuple<string,Action<string>>("#idshnick[href=nothing][type=$result]",w => Console.WriteLine(w + " - Selector1")),
+                new Tuple<string,Action<string>>("Vova[Mass=$result]",w => Console.WriteLine(w + " - Selector2")),
+                new Tuple<string,Action<string>>("#Kotember[Height=$result]",w => Console.WriteLine(w + " - Selector3")),
+                new Tuple<string,Action<string>>("#idshnick[href=$result]",w => Console.WriteLine(w + " - Selector4")),
+                new Tuple<string,Action<string>>("John_Snow",w => {}),
             };
-
             var cells = (new Selector(root)).QuerySelector(k).ToList();
         }
     }
