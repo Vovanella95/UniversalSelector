@@ -65,7 +65,7 @@ namespace UnitTestProject1
         #endregion
 
         #region Elements
-        static Element root = new Element()
+        Element root = new Element()
         {
             Children = new List<Element>()
                 {
@@ -79,7 +79,42 @@ namespace UnitTestProject1
                     {
                         Id = "idshnick",
                         Name = "TheName",
-                        Attributes = list2
+                        Attributes = new List<NewSuperModifyedSelector.Attribute>()
+                        {
+                            new NewSuperModifyedSelector.Attribute()
+                            {
+                                Name = "href",
+                                Value = "nothing"
+                            },
+                            new NewSuperModifyedSelector.Attribute()
+                            {
+                                Name = "type",
+                                Value = "tag"
+                            },
+                            new NewSuperModifyedSelector.Attribute()
+                            {
+                                Name = "text",
+                                Value = "I Am Vasya"
+                            }
+                        }
+                    },
+                    new Element()
+                    {
+                        Id = "NewElement",
+                        Name = "NewName",
+                        Attributes = new List<NewSuperModifyedSelector.Attribute>()
+                        {
+                            new NewSuperModifyedSelector.Attribute()
+                            {
+                                Name = "NewAttr1",
+                                Value = "NewValue1"
+                            },
+                            new NewSuperModifyedSelector.Attribute()
+                            {
+                                Name = "NewAttr2",
+                                Value = "NewValue2"
+                            }
+                        }
                     },
                     new Element()
                     {
@@ -92,296 +127,51 @@ namespace UnitTestProject1
                         Attributes = list1
                     }
                 }
-
         };
         #endregion
-        /*
-        [TestMethod]
-        public void QuerySelectorMustDoSimpleSelects()
-        {
-            TemplateElement template = new TemplateElement()
-            {
-                Name = "TheName",
-                Attributes = list1
-            };
-            IsMatch(template, "Name = TheName, Id = idshnick|Name = TheName, Id = idshnick|");
-        }
+        
 
         [TestMethod]
-        public void QuerySelectorMustDoSimpleSelects2()
+        public void SelectorMustDoSimpleSelects()
         {
-            TemplateElement template = new TemplateElement()
+            var list = new List<string>()
             {
-                Attributes = new List<NewSuperModifyedSelector.Attribute>()
-                {
-                    new NewSuperModifyedSelector.Attribute()
-                    {
-                        Name = "text",
-                        Value = "hello"
-                    }
-                }
+                "hello", "I Am Vasya", "hello"
             };
-            IsMatch(template, "Name = TheName, Id = idshnick|Name = TheName, Id = idshnick|Name = , Id = |Name = , Id = idshnick|");
+            Match("#idshnick[href=nothing][type=tag][text=$result]", list);
         }
 
         [TestMethod]
-        public void QuerySelectorSelectUnfullAttributes12to2()
+        public void SelectorMustDoSimpleSelects2()
         {
-            var template = new TemplateElement()
+            var list = new List<string>()
             {
-                Attributes = new List<NewSuperModifyedSelector.Attribute>()
-                {
-                    new NewSuperModifyedSelector.Attribute()
-                    {
-                        Name = "text",
-                        Value = "hello"
-                    },
-                    new NewSuperModifyedSelector.Attribute()
-                    {
-                        Name = "attr2",
-                        Value = "value2"
-                    }
-                }
+                "hello", "I Am Vasya", "hello"
             };
-
-            var element = new Element()
-            {
-                Attributes = new List<NewSuperModifyedSelector.Attribute>()
-                {
-                    new NewSuperModifyedSelector.Attribute()
-                    {
-                        Name = "text",
-                        Value = "hello"
-                    },
-                    new NewSuperModifyedSelector.Attribute()
-                    {
-                        Name = "attr2",
-                        Value = "value2"
-                    }
-                }
-            };
-
-            Assert.IsTrue(template.IsMatch(element));
+            Match("TheName[href=nothing][text=$result]", list);
         }
 
         [TestMethod]
-        public void QuerySelectorSelectUnfullAttributes2to2()
+        public void SelectorMustDoSeveralSelects() // Three Selects For One Element
         {
-            var template = new TemplateElement()
-            {
-                Attributes = new List<NewSuperModifyedSelector.Attribute>()
-                {
-                    new NewSuperModifyedSelector.Attribute()
-                    {
-                        Name = "attr2",
-                        Value = "value2"
-                    },
-                    new NewSuperModifyedSelector.Attribute()
-                    {
-                        Name = "text",
-                        Value = "hello"
-                    }
-                }
-            };
+            var k = (new Selector(root)).QuerySelector("[NewAttr1=NewValue1]", w => { }).First();
+            var name = k.Name;
+            Assert.IsTrue(name == "NewName");
 
-            var element = new Element()
-            {
-                Attributes = new List<NewSuperModifyedSelector.Attribute>()
-                {
-                    new NewSuperModifyedSelector.Attribute()
-                    {
-                        Name = "text",
-                        Value = "hello"
-                    },
-                    new NewSuperModifyedSelector.Attribute()
-                    {
-                        Name = "attr2",
-                        Value = "value2"
-                    }
-                }
-            };
+            k = (new Selector(root)).QuerySelector("[NewAttr2=NewValue2]", w => { }).First();
+            name = k.Name;
+            Assert.IsTrue(name == "NewName");
 
-            Assert.IsTrue(template.IsMatch(element));
+            k = (new Selector(root)).QuerySelector("[NewAttr1=NewValue1][NewAttr2=NewValue2]", w => { }).First();
+            name = k.Name;
+            Assert.IsTrue(name == "NewName");
         }
 
-        [TestMethod]
-        public void QuerySelectorSelectUnfullAttributes1to2()
+        public void Match(string selector, IEnumerable<string> results)
         {
-            var template = new TemplateElement()
-            {
-                Attributes = new List<NewSuperModifyedSelector.Attribute>()
-                {
-                    new NewSuperModifyedSelector.Attribute()
-                    {
-                        Name = "attr2",
-                        Value = "value2"
-                    }
-                }
-            };
-
-            var element = new Element()
-            {
-                Attributes = new List<NewSuperModifyedSelector.Attribute>()
-                {
-                    new NewSuperModifyedSelector.Attribute()
-                    {
-                        Name = "text",
-                        Value = "hello"
-                    },
-                    new NewSuperModifyedSelector.Attribute()
-                    {
-                        Name = "attr2",
-                        Value = "value2"
-                    }
-                }
-            };
-
-            Assert.IsTrue(template.IsMatch(element));
+            var list = new List<string>();
+            var k = (new Selector(root)).QuerySelector(selector, w => list.Add(w)).ToList();
+            Assert.IsTrue(results.All(w => list.Contains(w)) && list.All(w => results.Contains(w)));
         }
-
-        [TestMethod]
-        public void QuerySelectorSelectEmptyAttributes0to2()
-        {
-            var template = new TemplateElement()
-            {
-
-            };
-
-            var element = new Element()
-            {
-                Attributes = new List<NewSuperModifyedSelector.Attribute>()
-                {
-                    new NewSuperModifyedSelector.Attribute()
-                    {
-                        Name = "text",
-                        Value = "hello"
-                    },
-                    new NewSuperModifyedSelector.Attribute()
-                    {
-                        Name = "attr2",
-                        Value = "value2"
-                    }
-                }
-            };
-
-            Assert.IsTrue(template.IsMatch(element));
-        }
-
-        [TestMethod]
-        public void QuerySelectorSelectManyAttributes0toMany()
-        {
-            var template = new TemplateElement()
-            {
-                
-            };
-
-            var element = new Element()
-            {
-                Attributes = new List<NewSuperModifyedSelector.Attribute>()
-                {
-                 new NewSuperModifyedSelector.Attribute()
-                    {
-                        Name = "attr1",
-                        Value = "val1"
-                    },
-                    new NewSuperModifyedSelector.Attribute()
-                    {
-                        Name = "attr2",
-                        Value = "val2"
-                    },
-                    new NewSuperModifyedSelector.Attribute()
-                    {
-                        Name = "attr3",
-                        Value = "val3"
-                    },
-                    new NewSuperModifyedSelector.Attribute()
-                    {
-                        Name = "attr4",
-                        Value = "val4"
-                    },
-                    new NewSuperModifyedSelector.Attribute()
-                    {
-                        Name = "attr5",
-                        Value = "val5"
-                    },
-                    new NewSuperModifyedSelector.Attribute()
-                    {
-                        Name = "attr6",
-                        Value = "val6"
-                    },
-                    new NewSuperModifyedSelector.Attribute()
-                    {
-                        Name = "attr7",
-                        Value = "val7"
-                    },
-                    new NewSuperModifyedSelector.Attribute()
-                    {
-                        Name = "attr8",
-                        Value = "val8"
-                    },
-                        new NewSuperModifyedSelector.Attribute()
-
-                    {
-                        Name = "attr9",
-                        Value = "val9"
-                    },
-                        new NewSuperModifyedSelector.Attribute()
-                    {
-                        Name = "attr10",
-                        Value = "val10"
-                    }
-                
-                }
-            };
-
-            Assert.IsTrue(template.IsMatch(element));
-        }
-
-        [TestMethod]
-        public void QuerySelectorMustReturnFalseIfConditionIsWrong()
-        {
-            var template = new TemplateElement()
-            {
-                Attributes = new List<NewSuperModifyedSelector.Attribute>()
-                {
-                    new NewSuperModifyedSelector.Attribute()
-                    {
-                        Name = "attr2",
-                        Value = "value2"
-                    },
-                    new NewSuperModifyedSelector.Attribute()
-                    {
-                        Name = "text",
-                        Value = "hello"
-                    }
-                }
-            };
-
-            var element = new Element()
-            {
-                Attributes = new List<NewSuperModifyedSelector.Attribute>()
-                {
-                    new NewSuperModifyedSelector.Attribute()
-                    {
-                        Name = "text",
-                        Value = "hello"
-                    }
-                }
-            };
-
-            Assert.IsFalse(template.IsMatch(element));
-        }
-
-        private void IsMatch(TemplateElement template, string token)
-        {
-            var k = Selector.QuerySelector(template, root);
-            string sum = "";
-            foreach (var item in k)
-            {
-                sum += item.ToString() + "|";
-            }
-            Assert.IsTrue(token == sum);
-        }
-        */
     }
 }

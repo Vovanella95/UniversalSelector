@@ -33,7 +33,6 @@ namespace NewSuperModifyedSelector
         {
             if (Attributes == null) return null;
             if (tokenAttribs == null) return null;
-
             if (dictionary == null)
             {
                 dim = Attributes.Count();
@@ -43,24 +42,25 @@ namespace NewSuperModifyedSelector
             }
             var currentValues = String.Empty;
             var testedValues = string.Join(" ", dictionary.Select(w => w.Value)) + ' ';
-
-
             string INeedThis = null;
-            string neededName = Attributes.First(w => w.Value == "$result").Name;
+            string neededName = null;
+            if (Attributes.Any(w => w.Value == "$result"))
+                neededName = Attributes.First(w => w.Value == "$result").Name;
 
             foreach (var item in tokenAttribs.Where(w => dictionary.Keys.Contains(w.Name)))
             {
                 if (item.Value == Attributes.First(w => w.Name == item.Name).Value)
-                {
                     currentValues = AddValueToString(currentValues, dictionary[item.Name]);
-                }
-                if(item.Name == neededName)
+
+                if (item.Name == neededName)
                 {
                     INeedThis = item.Value;
                     currentValues = AddValueToString(currentValues, dictionary[item.Name]);
                 }
                 if (currentValues == testedValues)
                 {
+                    if (string.IsNullOrEmpty(INeedThis))
+                        INeedThis = "$none";
                     break;
                 }
             }
@@ -91,15 +91,15 @@ namespace NewSuperModifyedSelector
         {
             if (!string.IsNullOrEmpty(Name) && Name != element.Name) return null;
             if (!string.IsNullOrEmpty(Id) && Id != element.Id) return null;
-            if (Attributes != null)
+            if (Attributes != null && Attributes.Count()!=0)
             {
                 return CompareAttributes(element.Attributes);
             }
-            return null;
+            return "$none";
         }
 
         public TemplateElement() { }
-        public TemplateElement (string representation)
+        public TemplateElement(string representation)
         {
             Regex comparer = new Regex(@"(?'id'[#])|(?'attribs'\W\w+\W?\W\w+\W)|(?'tag'[.#=]*)");
             var selects = SplitProperties(representation);
@@ -142,7 +142,6 @@ namespace NewSuperModifyedSelector
         {
             Root = root;
         }
-
         public IEnumerable<Element> QuerySelector(string selector, Action<string> action)
         {
             var template = new TemplateElement(selector);
@@ -160,11 +159,50 @@ namespace NewSuperModifyedSelector
                     }
                 }
                 var isMatch = template.IsMatch(node);
-                if (isMatch!=null)
+                if (!string.IsNullOrEmpty(isMatch))
                 {
-                    action(isMatch);
+                    if (isMatch != "$none")
+                    {
+                        action(isMatch);
+                    }
                     yield return node;
                 }
+            }
+        }
+
+        public IEnumerable<Element> QuerySelector(IEnumerable<Tuple<string, Action<string>>> selectors)
+        {
+            var templates = selectors.Select(w => new Tuple<TemplateElement, Action<string>>(new TemplateElement(w.Item1), w.Item2)).ToList();
+
+
+            if (Root == null) throw new ArgumentNullException();
+            var nodeStack = new Stack<Element>();
+            nodeStack.Push(Root);
+            while (nodeStack.Count != 0)
+            {
+                var node = nodeStack.Pop();
+                if (node.Children != null)
+                {
+                    foreach (var subNode in node.Children.Reverse())
+                    {
+                        nodeStack.Push(subNode);
+                    }
+                }
+
+                foreach (var template in templates)
+                {
+                    var isMatch = template.Item1.IsMatch(node);
+                    if (!string.IsNullOrEmpty(isMatch))
+                    {
+                        if (isMatch != "$none")
+                        {
+                            template.Item2(isMatch);
+                        }
+                        yield return node;
+                    }
+                }
+
+
             }
         }
     }
