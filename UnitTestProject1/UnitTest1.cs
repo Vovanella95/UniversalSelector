@@ -71,14 +71,10 @@ namespace UnitTestProject1
                 {
                     new Element()
                     {
-                        Id = "idshnick",
-                        Name = "TheName",
                         Attributes = list1
                     },
                     new Element()
                     {
-                        Id = "idshnick",
-                        Name = "TheName",
                         Attributes = new List<NewSuperModifyedSelector.Attribute>()
                         {
                             new NewSuperModifyedSelector.Attribute()
@@ -100,8 +96,6 @@ namespace UnitTestProject1
                     },
                     new Element()
                     {
-                        Id = "NewElement",
-                        Name = "NewName",
                         Attributes = new List<NewSuperModifyedSelector.Attribute>()
                         {
                             new NewSuperModifyedSelector.Attribute()
@@ -123,7 +117,6 @@ namespace UnitTestProject1
                     },
                     new Element()
                     {
-                        Id = "idshnick",
                         Attributes = list1
                     }
                 }
@@ -133,26 +126,18 @@ namespace UnitTestProject1
         #region Elements2
         Element root2 = new Element()
         {
-            Name = "John_Wick",
-            Id = "Killing_Strangers",
             Children = new List<Element>()
                 {
                     new Element()
                     {
-                        Id = "idshnick",
-                        Name = "Arno_Dorian",
                         Attributes = list1
                     },
                     new Element()
                     {
-                        Id = "Crown",
-                        Name = "John_Snow",
                         Attributes = list1
                     },
                     new Element()
                     {
-                        Id = "idshnick",
-                        Name = "Jacob_Fry",
                         Attributes = new List<NewSuperModifyedSelector.Attribute>()
                         {
                             new NewSuperModifyedSelector.Attribute()
@@ -174,8 +159,6 @@ namespace UnitTestProject1
                     },
                     new Element()
                     {
-                        Name="Vova",
-                        Id = "Zdarova",
                         Children = new List<Element>(),
                         Attributes = new List<NewSuperModifyedSelector.Attribute>()
                         {
@@ -188,7 +171,6 @@ namespace UnitTestProject1
                     },
                     new Element()
                     {
-                        Id = "Kotember",
                         Attributes = new List<NewSuperModifyedSelector.Attribute>()
                         {
                             new NewSuperModifyedSelector.Attribute()
@@ -227,22 +209,6 @@ namespace UnitTestProject1
             Match("TheName[href=nothing][text=$result]", list);
         }
 
-        [TestMethod]    // Three Selects For One Element
-        public void SelectorMustDoSeveralSelects()
-        {
-            var k = (new Selector(root)).QuerySelector("[NewAttr1=NewValue1]", w => { }).First();
-            var name = k.Name;
-            Assert.IsTrue(name == "NewName");
-
-            k = (new Selector(root)).QuerySelector("[NewAttr2=NewValue2]", w => { }).First();
-            name = k.Name;
-            Assert.IsTrue(name == "NewName");
-
-            k = (new Selector(root)).QuerySelector("[NewAttr1=NewValue1][NewAttr2=NewValue2]", w => { }).First();
-            name = k.Name;
-            Assert.IsTrue(name == "NewName");
-        }
-
         [TestMethod]
         public void QuerySelectorForTupleMustWork()
         {
@@ -250,11 +216,10 @@ namespace UnitTestProject1
             var list = new List<string>();
             var k = new List<Tuple<string, Action<string>>>()
             {
-                new Tuple<string,Action<string>>("#idshnick[href=nothing][type=$result]",w => list.Add(w + " - Selector1")),
-                new Tuple<string,Action<string>>("Vova[Mass=$result]",w => list.Add(w + " - Selector2")),
-                new Tuple<string,Action<string>>("#Kotember[Height=$result]",w => list.Add(w + " - Selector3")),
-                new Tuple<string,Action<string>>("#idshnick[href=$result]",w => list.Add(w + " - Selector4")),
-                new Tuple<string,Action<string>>("John_Snow",w => {}),
+                new Tuple<string,Action<string>>("[href=nothing][type=$result]",w => list.Add(w + " - Selector1")),
+                new Tuple<string,Action<string>>("[Mass=$result]",w => list.Add(w + " - Selector2")),
+                new Tuple<string,Action<string>>("[Height=$result]",w => list.Add(w + " - Selector3")),
+                new Tuple<string,Action<string>>("[href=$result]",w => list.Add(w + " - Selector4")),
             };
             var cells = (new Selector(root2)).QuerySelector(k).ToList();
 
@@ -262,8 +227,10 @@ namespace UnitTestProject1
                       && list.ElementAt(1) == "nothing - Selector4"
                       && list.ElementAt(2) == "tag - Selector1"
                       && list.ElementAt(3) == "nothing - Selector4"
-                      && list.ElementAt(4) == "58kg - Selector2"
-                      && list.ElementAt(5) == "230cm - Selector3";
+                      && list.ElementAt(4) == "tag - Selector1"
+                      && list.ElementAt(5) == "nothing - Selector4"
+                      && list.ElementAt(6) == "58kg - Selector2"
+                      && list.ElementAt(7) == "230cm - Selector3";
             Assert.IsTrue(isTrue);
         }
 
