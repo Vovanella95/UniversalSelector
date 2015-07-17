@@ -75,17 +75,21 @@ namespace UnitTestProject1
                     },
                     new Element()
                     {
+                        Attributes = list1
+                    },
+                    new Element()
+                    {
                         Attributes = new List<NewSuperModifyedSelector.Attribute>()
                         {
                             new NewSuperModifyedSelector.Attribute()
                             {
-                                Name = "href",
-                                Value = "nothing"
+                                Name = "mounth",
+                                Value = "january"
                             },
                             new NewSuperModifyedSelector.Attribute()
                             {
-                                Name = "type",
-                                Value = "tag"
+                                Name = "link",
+                                Value = "stylesheet"
                             },
                             new NewSuperModifyedSelector.Attribute()
                             {
@@ -96,28 +100,31 @@ namespace UnitTestProject1
                     },
                     new Element()
                     {
+                        Children = new List<Element>(),
                         Attributes = new List<NewSuperModifyedSelector.Attribute>()
                         {
                             new NewSuperModifyedSelector.Attribute()
                             {
-                                Name = "NewAttr1",
-                                Value = "NewValue1"
-                            },
-                            new NewSuperModifyedSelector.Attribute()
-                            {
-                                Name = "NewAttr2",
-                                Value = "NewValue2"
+                                Name = "Mass",
+                                Value = "58kg"
                             }
                         }
                     },
                     new Element()
                     {
-                        Attributes = list2,
-                        Children = new List<Element>()
-                    },
-                    new Element()
-                    {
-                        Attributes = list1
+                        Attributes = new List<NewSuperModifyedSelector.Attribute>()
+                        {
+                            new NewSuperModifyedSelector.Attribute()
+                            {
+                                Name = "Height",
+                                Value = "230cm"
+                            },
+                            new NewSuperModifyedSelector.Attribute()
+                            {
+                                Name = "Height2",
+                                Value = "2302cm"
+                            }
+                        }
                     }
                 }
         };
@@ -190,27 +197,7 @@ namespace UnitTestProject1
         #endregion
 
         [TestMethod]
-        public void SelectorMustDoSimpleSelects()
-        {
-            var list = new List<string>()
-            {
-                "hello", "I Am Vasya", "hello"
-            };
-            Match("#idshnick[href=nothing][type=tag][text=$result]", list);
-        }
-
-        [TestMethod]
-        public void SelectorMustDoSimpleSelects2()
-        {
-            var list = new List<string>()
-            {
-                "hello", "I Am Vasya", "hello"
-            };
-            Match("TheName[href=nothing][text=$result]", list);
-        }
-
-        [TestMethod]
-        public void QuerySelectorForTupleMustWork()
+        public void QuerySelectorForTupleMustWork1()
         {
 
             var list = new List<string>();
@@ -234,11 +221,53 @@ namespace UnitTestProject1
             Assert.IsTrue(isTrue);
         }
 
-        public void Match(string selector, IEnumerable<string> results)
+        [TestMethod]
+        public void QuerySelectorForTupleMustWork2()
         {
             var list = new List<string>();
-            var k = (new Selector(root)).QuerySelector(selector, w => list.Add(w)).ToList();
-            Assert.IsTrue(results.All(w => list.Contains(w)) && list.All(w => results.Contains(w)));
+            var k = new List<Tuple<string, Action<string>>>()
+            {
+                new Tuple<string,Action<string>>("[type=tag][href=$result]",w=>list.Add(w + " - Selector1")),
+                    new Tuple<string,Action<string>>("[type=$result][href=nothing]",w=>list.Add(w + " - Selector2")),
+                    new Tuple<string,Action<string>>("[Height=$result]",w=>list.Add(w + " - Selector3")),
+                    new Tuple<string,Action<string>>("*",w=>list.Add(w + " - Selector4"))
+            };
+            var cells = (new Selector(root)).QuerySelector(k).ToList();
+
+            var isTrue = list.ElementAt(0) == "nothing - Selector1"
+                      && list.ElementAt(1) == "tag - Selector2"
+                      && list.ElementAt(2) == "nothing - Selector1"
+                      && list.ElementAt(3) == "tag - Selector2"
+                      && list.ElementAt(4) == "230cm - Selector3";
+            Assert.IsTrue(isTrue);
         }
+
+        [TestMethod]
+        public void QuerySelectorMustImplementsAllSelector()
+        {
+           
+            var k = new List<Tuple<string, Action<string>>>()
+            {
+                    new Tuple<string,Action<string>>("*",w=>{ })
+            };
+            var cells = (new Selector(root)).QuerySelector(k).ToList();
+
+            var isTrue = cells.ElementAt(0).ToString() == "Empty"
+                      && cells.ElementAt(1).ToString() == "[href = nothing][type = tag][text = hello]"
+                      && cells.ElementAt(2).ToString() == "[href = nothing][type = tag][text = hello]"
+                      && cells.ElementAt(3).ToString() == "[mounth = january][link = stylesheet][text = I Am Vasya]"
+                      && cells.ElementAt(4).ToString() == "[Mass = 58kg]"
+                      && cells.ElementAt(5).ToString() == "[Height = 230cm][Height2 = 2302cm]";
+            Assert.IsTrue(isTrue);
+        }
+
+        [TestMethod]
+        public void GetAttributeByNameMustWork()
+        {
+            var attr = root2.Children.First().GetAttributeValue("href");
+            Assert.IsTrue(attr == "nothing");
+        }
+
+
     }
 }

@@ -10,6 +10,14 @@ namespace ConsoleApp1
 {
     class Program
     {
+        static void PrintItem(string w, int num)
+        {
+            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.Write(w);
+            Console.ForegroundColor = (ConsoleColor)((num) % 16 + 1);
+            Console.WriteLine(" - Selector" + num);
+        }
+
         static void Main(string[] args)
         {
             #region Attributes
@@ -69,6 +77,29 @@ namespace ConsoleApp1
             #region Elements
             var root = new Element()
             {
+                Attributes = new List<NewSuperModifyedSelector.Attribute>()
+                {
+                    new NewSuperModifyedSelector.Attribute()
+                    {
+                        Name = "name",
+                        Value = "root"
+                    },
+                    new NewSuperModifyedSelector.Attribute()
+                    {
+                        Name = "description",
+                        Value = "everything_is_connected"
+                    },
+                    new NewSuperModifyedSelector.Attribute()
+                    {
+                        Name = "health",
+                        Value = "good"
+                    },
+                    new NewSuperModifyedSelector.Attribute()
+                    {
+                        Name = "person",
+                        Value = "Aiden_Pears"
+                    }
+                },
                 Children = new List<Element>()
                 {
                     new Element()
@@ -78,6 +109,10 @@ namespace ConsoleApp1
                     new Element()
                     {
                         Attributes = list1
+                    },
+                    new Element()
+                    {
+
                     },
                     new Element()
                     {
@@ -132,14 +167,23 @@ namespace ConsoleApp1
             };
             #endregion
 
-
-
-
-            var ss = new Selector2(root).QuerySelector(new List<Tuple<string, Action<string>>>()
+            var ss = new Selector(root).QuerySelector(new List<Tuple<string, Action<string>>>()
                 {
-                    new Tuple<string,Action<string>>("[type=tag][href=$result]",w=>Console.WriteLine(w+" - Selector1")),
-                    new Tuple<string,Action<string>>("[Height=230cm]",w=>Console.WriteLine(w+" - Selector2"))
+                    new Tuple<string,Action<string>>("[type=tag][href=$result]",w=>PrintItem(w,1)),
+                    new Tuple<string,Action<string>>("[type=$result][href=nothing]",w=>PrintItem(w,2)),
+                    new Tuple<string,Action<string>>("[Height=$result]",w=>PrintItem(w,3)),
+                    new Tuple<string,Action<string>>("[name=$result]",w=>PrintItem(w,4)),
+                    new Tuple<string,Action<string>>("*",w=>PrintItem(w,5))
                 }).ToList();
+
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            Console.WriteLine();
+            foreach (var item in ss)
+            {
+                Console.WriteLine(item);
+            }
+
+            Console.ReadKey();
         }
     }
 }
