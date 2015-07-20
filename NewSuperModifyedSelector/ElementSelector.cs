@@ -40,8 +40,9 @@ namespace NewSuperModifyedSelector
 
     public class Selector
     {
-        public IEnumerable<State> States;
         Element Root;
+        public IEnumerable<State> States;
+
         public Selector(Element root)
         {
             Root = root;
@@ -77,18 +78,18 @@ namespace NewSuperModifyedSelector
 
     public class State
     {
-        #region Private Fields
+        #region Fields
         IEnumerable<Attribute> Attributes;
-        Action<string> Trigger;
-        int Dim;
         Dictionary<string, int> Dict;
+        Action<string> Trigger;
         string CurrentValues;
         string TestedValues;
         string NeededName;
         string INeedThis;
+        int Dim;
         #endregion
 
-        #region Public Methods
+
         public State(string selector, Action<string> action)
         {
             if (selector == "*") return;
@@ -140,40 +141,28 @@ namespace NewSuperModifyedSelector
             CurrentValues = String.Empty;
             return null;
         }
-        #endregion
-
-        #region Private Methods
-        private IEnumerable<Attribute> GetAttributes(string representation)
-        {
-            return SplitProperties(representation).Where(w => !string.IsNullOrEmpty(w)).Select(w => new Attribute(w));
-        }
-        private IEnumerable<string> SplitProperties(string selector)
+        private IEnumerable<Attribute> GetAttributes(string selector)
         {
             int i1 = 0;
+            int temp;
+            string str;
             for (int i = 0; i < selector.Length; i++)
             {
-                if (selector[i]=='[' || i == selector.Length - 1)
+                if (selector[i] == '[' || i == selector.Length - 1)
                 {
-                    var temp = i == selector.Length - 1 ? i + 1 : i;
-                    yield return selector.Substring(i1, temp - i1);
+                    temp = i == selector.Length - 1 ? i + 1 : i;
+                    str = selector.Substring(i1, temp - i1);
+                    if (!string.IsNullOrEmpty(str))
+                    {
+                        yield return new Attribute(selector.Substring(i1, temp - i1));
+                    }
                     i1 = i;
                 }
             }
         }
-        private string TransformToString(IEnumerable<int> array)
-        {
-            return string.Join(" ", array.Select(w => w.ToString())) + ' ';
-        }
         private string AddValueToString(string str, int value)
         {
-            return TransformToString(AddToEnumerable(str.Split(' ')
-                .Where(w => !string.IsNullOrEmpty(w))
-                .Select(w => Convert.ToInt32(w)), value));
+            return string.Join(" ",(str + value).Split(' ').OrderBy(w => w))+' ';
         }
-        private IEnumerable<int> AddToEnumerable(IEnumerable<int> collection, params int[] values)
-        {
-            return Enumerable.Concat(collection, values).OrderBy(w => w);
-        }
-        #endregion
     }
 }
